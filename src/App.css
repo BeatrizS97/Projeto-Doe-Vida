@@ -1,0 +1,313 @@
+/* src/App.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fef2f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #e11d48, #be123c);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #be123c, #9f1239);
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--final-width);
+  }
+}
+
+@keyframes bloodFlow {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes pulse-fast {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes drip {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200px);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 1s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 1s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fadeIn 1s ease-out 0.9s forwards;
+  opacity: 0;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+.animate-slide-right {
+  animation: slideRight 1.5s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 0.3s ease-in-out;
+}
+
+.animate-confetti {
+  animation: confetti 3s ease-out forwards;
+}
+
+.animate-blood-flow {
+  animation: bloodFlow 3s ease-in-out infinite;
+}
+
+.animate-drip {
+  animation: drip 2s ease-in infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Hover Effects */
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+.hover\:scale-110:hover {
+  transform: scale(1.1);
+}
+
+.hover\:rotate-1:hover {
+  transform: rotate(1deg);
+}
+
+.hover\:-rotate-1:hover {
+  transform: rotate(-1deg);
+}
+
+/* Transições globais */
+button, a, input {
+  transition: all 0.3s ease;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.75rem !important;
+  }
+  
+  .text-6xl {
+    font-size: 2.5rem !important;
+  }
+  
+  .text-5xl {
+    font-size: 2rem !important;
+  }
+  
+  .text-4xl {
+    font-size: 1.75rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .text-6xl {
+    font-size: 2rem !important;
+  }
+  
+  .text-5xl {
+    font-size: 1.75rem !important;
+  }
+  
+  .text-4xl {
+    font-size: 1.5rem !important;
+  }
+  
+  .text-3xl {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Focus states para acessibilidade */
+input:focus,
+button:focus {
+  outline: 2px solid #e11d48;
+  outline-offset: 2px;
+}
+
+/* Gradient Text */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Blur effect */
+.blur-sm {
+  filter: blur(4px);
+}
+
+/* Print styles */
+@media print {
+  nav, footer {
+    display: none;
+  }
+}
