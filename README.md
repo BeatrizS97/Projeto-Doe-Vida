@@ -82,7 +82,6 @@ npm run build
 ```
 
 Recomendado:
-
 * Vercel
 * Netlify
 * GitHub Pages
@@ -128,6 +127,3 @@ Obrigada por respeitar esta história.
 
 **Rodrigo e Natalha, vocês vivem em cada linha deste projeto.**
 Sempre.
-
-
-É só pedir!
