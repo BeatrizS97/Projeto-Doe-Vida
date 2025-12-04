@@ -1,4 +1,5 @@
 // src/components/Heart3D.jsx
+
 import React, { useState, useEffect } from 'react';
 
 const Heart3D = () => {
@@ -6,21 +7,21 @@ const Heart3D = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFillLevel(prev => (prev >= 100 ? 0 : prev + 0.5)); // Mais devagar (0.5 ao invés de 1)
-    }, 100); // Atualiza a cada 100ms
+      setFillLevel(prev => (prev >= 100 ? 0 : prev + 0.5));
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="relative w-32 h-32 lg:w-40 lg:h-40 mx-auto animate-pulse-slow">
+    <div className="relative w-full h-full mx-auto animate-pulse-slow">
       <svg viewBox="0 0 200 200" className="w-full h-full">
         <defs>
           {/* Gradiente ESCURO realista igual bolsa */}
           <linearGradient id="bloodGradientDark" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#7f1d1d" /> {/* Vermelho bem escuro */}
-            <stop offset="30%" stopColor="#991b1b" /> {/* Vermelho escuro */}
-            <stop offset="60%" stopColor="#b91c1c" /> {/* Vermelho médio */}
-            <stop offset="100%" stopColor="#dc2626" /> {/* Vermelho */}
+            <stop offset="0%" stopColor="#7f1d1d" />
+            <stop offset="30%" stopColor="#991b1b" />
+            <stop offset="60%" stopColor="#b91c1c" />
+            <stop offset="100%" stopColor="#dc2626" />
           </linearGradient>
 
           {/* Brilho 3D sutil */}
@@ -132,7 +133,7 @@ const Heart3D = () => {
 
       {/* Porcentagem */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <span className="text-2xl lg:text-3xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+        <span className="text-lg lg:text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
           {Math.floor(fillLevel)}%
         </span>
       </div>
