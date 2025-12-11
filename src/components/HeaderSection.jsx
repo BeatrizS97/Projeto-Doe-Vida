@@ -42,34 +42,47 @@ const HeaderSection = () => {
   ];
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-red-600 to-rose-800 text-white py-12 lg:py-16">
+    <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-red-600 to-rose-800 text-white py-0 lg:py-0">
       <div className="absolute inset-0 bg-black opacity-20"></div>
       
-      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
+      {/* Coração posicionado ABSOLUTAMENTE no canto superior esquerdo */}
+      <div className="absolute top-4 left-4 z-20">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
+          <HeartBeat size="large" filled={true} className="text-white" />
+          <div className="absolute top-1 right-1 text-xs font-bold bg-white text-rose-600 rounded-full w-8 h-8 flex items-center justify-center">
+            47%
+          </div>
+        </div>
+      </div>
+
+      {/* Conteúdo principal - Posicionado manualmente abaixo do coração */}
+      <div 
+        className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10"
+        style={{
+          marginTop: '120px',
+          marginLeft: '120px'
+        }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* LADO ESQUERDO: Conteúdo */}
           <div className="text-center lg:text-left animate-fade-in px-4 sm:px-6 md:px-8 lg:pl-24">
-            <div className="mb-6 flex justify-center lg:justify-start">
-              <div className="w-40 h-40 relative">
-                <HeartBeat size="large" filled={true} className="text-white" />
-                <div className="absolute top-1 right-1 text-xs font-bold bg-white text-rose-600 rounded-full w-8 h-8 flex items-center justify-center">
-                  47%
-                </div>
-              </div>
-            </div>
             
+            {/* Título */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               Doe Vida, Salve Vidas
             </h1>
             
+            {/* Subtítulo */}
             <p className="text-lg sm:text-xl font-light mb-4 animate-fade-in-delay">
               Em memória de Rodrigo e Natalha <span className="inline-block ml-1">❤️</span>
             </p>
             
+            {/* Descrição */}
             <p className="text-base sm:text-lg leading-relaxed mb-6 opacity-90 max-w-md mx-auto lg:mx-0">
               Transformando saudade em esperança através da doação de sangue. Cada gesto salva vidas e mantém viva a memória de quem amamos.
             </p>
             
+            {/* Botão */}
             <div className="flex justify-center lg:justify-start">
               <Button 
                 variant="secondary"
