@@ -50,49 +50,29 @@ const Map = () => {
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-red-50 py-8 lg:py-12">
       <div className="container mx-auto px-4 lg:px-6">
         
-{/* Header Animado - SEM CORAÇÃO */}
-<div className="text-center mb-8 animate-fade-in">
-  <div className="relative inline-block mb-4">
-    {/* Glow difuso com efeito 3D — IDÊNTICO AO DA HOME */}
-    <div className="absolute inset-0 bg-white rounded-full blur-xl opacity-60 animate-pulse" style={{ animationDuration: '3s' }}></div>
+        {/* Header Animado - SEM CORAÇÃO */}
+        <div className="text-center mb-8 animate-fade-in">
+          {/* Ícone de Localização IGUAL DA HOME */}
+          <div className="relative inline-block mb-4">
+            <div className="absolute inset-0 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl shadow-lg animate-pulse" style={{ animationDuration: '3s' }}></div>
+            <div className="relative bg-gradient-to-br from-rose-500 to-red-600 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            {/* Partícula */}
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-400 rounded-full animate-ping"></div>
+          </div>
+          
+          <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
+            Hemocentro Perto de Mim
+          </h1>
+          <p className="text-base lg:text-lg text-gray-600">
+            Encontre o local mais próximo para doar
+          </p>
+        </div>
 
-    {/* Pin com coração — versão 3D com sombra e tamanho maior */}
-    <div className="relative w-20 h-20 flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-      <svg viewBox="0 0 24 24" className="w-full h-full drop-shadow-lg" fill="none">
-        {/* Pin vermelho sólido */}
-        <path
-          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
-          fill="#f43f5e"
-        />
-        {/* Coração branco */}
-        <path
-          d="M12 13.5c-1.5-1-2.5-2-2.5-3.25 0-.69.56-1.25 1.25-1.25.36 0 .69.15.93.39l.32.36.32-.36c.24-.24.57-.39.93-.39.69 0 1.25.56 1.25 1.25 0 1.25-1 2.25-2.5 3.25z"
-          fill="#fff"
-        />
-      </svg>
-      
-      {/* Anel de pulso animado — aura difusa rosa claro */}
-      <div className="absolute inset-0 animate-ping opacity-30">
-        <svg viewBox="0 0 24 24" className="w-full h-full" fill="none">
-          <circle
-            cx="12"
-            cy="9"
-            r="6"
-            stroke="#fecaca"
-            strokeWidth="1.5"
-          />
-        </svg>
-      </div>
-    </div>
-  </div>
-
-  <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
-    Hemocentro Perto de Mim
-  </h1>
-  <p className="text-base lg:text-lg text-gray-600">
-    Encontre o local mais próximo para doar
-  </p>
-</div>
         {/* Search Bar - REDESENHADO */}
         <div className="max-w-2xl mx-auto mb-8 animate-slide-up">
           <div className="bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-xl p-5 border border-rose-100/50">
@@ -295,7 +275,7 @@ const Map = () => {
           </div>
         </div>
 
-        {/* All Hemocentros List - ALTURA DINÂMICA */}
+        {/* All Hemocentros List - LAYOUT OTIMIZADO */}
         <div className="max-w-6xl mx-auto mb-10">
           <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
             {selectedState === 'all' 
@@ -303,20 +283,18 @@ const Map = () => {
               : `Hemocentros - ${selectedState}`}
           </h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+          {/* Usando columns ao invés de grid para layout masonry */}
+          <div className="columns-1 lg:columns-2 gap-5 space-y-5">
             {Object.entries(filteredHemocentros).sort().map(([state, centers]) => (
               <div 
                 key={state} 
-                className="bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-lg p-5 border border-rose-100/50 hover:shadow-xl transition-all duration-300 animate-slide-up h-fit"
+                className="bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-lg p-5 border border-rose-100/50 hover:shadow-xl transition-all duration-300 animate-slide-up break-inside-avoid mb-5"
               >
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-rose-500">
                   <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">{state.substring(0, 2)}</span>
                   </div>
                   <h3 className="text-lg font-bold text-gray-800">{state}</h3>
-                  <span className="ml-auto bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full">
-                    {centers.length}
-                  </span>
                 </div>
                 
                 <div className="space-y-3">
