@@ -1,20 +1,20 @@
-// Importações necessárias do React e bibliotecas externas
+// Importações do React e bibliotecas externas
 import React, { useState } from 'react';
-import { Home, AlertCircle, Users, MapPin, Heart } from 'lucide-react'; // Ícones para menu
-import { Link, useLocation } from 'react-router-dom'; // Link para navegação e useLocation para rota ativa
-import HeartBeat from './HeartBeat'; // Componente de coração animado
+import { Home, AlertCircle, Users, MapPin, Heart } from 'lucide-react';
 
-// Componente de navegação principal
+// Componente Navigation: Barra de navegação principal do site
 const Navigation = () => {
-  // Hook useLocation retorna a localização/rota atual
-  const location = useLocation();
 
-  // Estado para controlar abertura/fechamento do menu mobile
-  // useState retorna [valor, função para alterar valor]
+  // Estado para controlar se o menu mobile está aberto ou fechado
+  // Valor inicial: false (menu fechado)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Array com todos os itens do menu de navegação
-  // Cada objeto contém: caminho, texto e ícone
+  // Estado para saber qual item do menu está ativo/selecionado
+  // Valor inicial: '/' (página inicial)
+  const [activeItem, setActiveItem] = useState('/');
+
+  // Dados do menu de navegação: Array com todos os itens do menu de navegação
+  // Cada objeto contém: caminho da rota, texto a exibir, e ícone
   const navItems = [
     { path: '/', label: 'Início', icon: Home },
     { path: '/cuidados', label: 'Cuidados', icon: AlertCircle },
@@ -23,106 +23,165 @@ const Navigation = () => {
     { path: '/doacao', label: 'Metas de Doações', icon: Heart }
   ];
 
+  // Estrutura do componente   
   return (
-    // Nav principal com posição sticky (fica fixo no topo ao rolar)
     <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-4 border-rose-600">
-      {/* Container responsivo com padding adaptativo */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Flex container para alinhar logo e menu */}
-        <div className="flex items-center justify-between py-4">
 
-          {/* Logo e nome do site */}
-          <Link to="/" className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity duration-300">
-            {/* Componente de coração animado */}
-            <HeartBeat size="small" />
+      {/* Container responsivo centralizado */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Flex container para alinhar logo e menu horizontalmente */}
+        <div className="flex items-center justify-between py-4">{/* justify-between: logo à esquerda, menu à direita */}
+
+          {/* Logo (Esquerda) */}
+          <div
+            className="flex items-center space-x-3 cursor-pointer group" // group: permite aplicar hover em elementos filhos
+            onClick={() => setActiveItem('/')} // Ao clicar, marca "Início" como ativo
+          >
+            {/* Container do ícone de coração com efeitos */}
+            <div className="relative"> {/* relative: permite posicionar elementos absolutamente dentro */}
+
+              {/* Ícone do coração */}
+              <Heart className="w-10 h-10 text-red-600 fill-red-600 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg" />
+
+              {/* Anel de pulso que aparece ao passar o mouse */}
+              <div className="absolute inset-0 rounded-full bg-red-600 opacity-0 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
+            </div>
+
             {/* Textos do logo */}
             <div className="flex flex-col">
-              <span className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-rose-600 to-red-700 bg-clip-text text-transparent">
+
+              {/* Título principal com gradiente */}
+              <span className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-rose-600 to-red-700 bg-clip-text text-transparent transition-all duration-300 group-hover:from-rose-700 group-hover:to-red-800">
                 Doe Vida
               </span>
-              <span className="text-sm lg:text-base text-gray-600 -mt-0.5">Rodrigo e Natalha vivem em nós</span>
-            </div>
-          </Link>
 
-          {/* Menu desktop - visível apenas em telas grandes (lg e acima) */}
-          <div className="hidden lg:flex space-x-6">
-            {/* Loop map para renderizar cada item do menu */}
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path} // Key única para cada elemento do loop
-                to={path} // Caminho de destino
-                // Classes dinâmicas baseadas na rota atual
-                // Se location.pathname === path, aplica estilos de "ativo"
-                className={`flex items-center space-x-1.5 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ease-in-out text-lg ${location.pathname === path
+              {/* Subtítulo */}
+              <span className="text-sm lg:text-lg text-gray-600 -mt-0.5 transition-colors duration-300 group-hover:text-gray-800">
+                Rodrigo e Natalha vivem em nós
+              </span>
+            </div>
+          </div>
+
+          {/* Menu Desktop (Visível apenas em telas grandes) */}
+          <div className="hidden lg:flex space-x-6"> {/* hidden: esconde em mobile | lg:flex: mostra em desktop */}
+            {/* Loop: renderiza um botão para cada item do menu */}
+            {navItems.map(({ path, label, icon: Icon }) => ( // map: percorre o array e cria elementos
+              <button
+                key={path} // key: identificador único necessário em listas React
+                onClick={() => setActiveItem(path)} // Ao clicar, marca este item como ativo
+                className={`relative flex items-center space-x-1.5 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ease-in-out text-lg group ${activeItem === path
                     ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md scale-105'
                     : 'text-gray-700 hover:bg-rose-50 hover:scale-105'
                   }`}
               >
-                {/* Renderiza o ícone do item */}
-                <Icon className="w-5 h-5" />
-                {/* Renderiza o texto do item */}
-                <span>{label}</span>
-              </Link>
+                {/* Efeito de brilho sutil que aparece ao passar o mouse (apenas em itens não ativos) */}
+                {activeItem !== path && ( // Renderização condicional: só mostra se NÃO for o item ativo
+                  <div className="absolute inset-0 bg-gradient-to-r from-rose-100 to-red-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                )}
+
+                {/* Ícone do menu */}
+                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110' // Só cresce no hover se não estiver ativo
+                  }`} />
+
+                {/* Texto do menu */}
+                <span className="relative z-10">{label}</span>
+              </button>
             ))}
           </div>
 
-          {/* Botão hamburger para menu mobile */}
-          {/* Visível apenas em telas pequenas (oculto em lg e acima) */}
+          {/* Botçao Hamburger (Visível apenas em mobile) */}
           <button
-            className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-rose-50 transition-all duration-300 ease-in-out shadow-sm hover:shadow-md"
-            // onClick inverte o estado do menu (aberto/fechado)
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-rose-50 transition-all duration-300 ease-in-out shadow-sm hover:shadow-md relative overflow-hidden group"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} // Toggle: inverte o estado (abre/fecha menu)
+          /* 
+            lg:hidden: esconde em telas grandes (≥1024px)
+            overflow-hidden: esconde conteúdo que sair do botão (necessário para efeito ripple)
+          */
           >
-            {/* Container do ícone hamburger animado */}
+            {/* Efeito ripple (ondulação) ao clicar no botão */}
+            <div className="absolute inset-0 bg-rose-100 scale-0 group-active:scale-100 transition-transform duration-300 rounded-lg"></div>
+
+            {/* Container das 3 linhas do ícone hamburger */}
             <div className="relative w-6 h-6">
-              {/* Linha superior - se menu aberto, rotaciona 45° */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : 'top-1'
+
+              {/* Linha superior: vira diagonal quando menu está aberto */}
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-2.5' : 'top-1' // Se menu aberto: rotaciona 45° e move para baixo
                 }`}></span>
-              {/* Linha do meio - se menu aberto, fica invisível */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100 top-3'
+
+              {/* Linha do meio: desaparece quando menu está aberto */}
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100 top-2.5' // Fica invisível e diminui
                 }`}></span>
-              {/* Linha inferior - se menu aberto, rotaciona -45° */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : 'top-5'
+
+              {/* Linha inferior: vira diagonal oposta quando menu está aberto */}
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 translate-y-2.5' : 'top-4' // Rotaciona -45° (direção oposta)
                 }`}></span>
             </div>
           </button>
         </div>
 
-        {/* Menu mobile dropdown */}
-        {/* Visível apenas em telas pequenas (oculto em lg e acima) */}
+        {/* Menu Mobile Dropdown */}
         <div
-          // Classes dinâmicas para animar abertura/fechamento
-          // max-h-screen quando aberto, max-h-0 quando fechado
           className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
             }`}
         >
-          {/* Container dos links do menu mobile */}
+          {/* Container dos itens do menu */}
           <div className="flex flex-col space-y-2 pb-4 bg-white rounded-lg shadow-md">
-            {/* Loop map para renderizar cada item do menu mobile */}
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path} // Key única para cada elemento
-                to={path} // Caminho de destino
-                // Ao clicar, fecha o menu mobile
-                onClick={() => setIsMobileMenuOpen(false)}
-                // Classes dinâmicas baseadas na rota atual
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ease-in-out ${location.pathname === path
-                    ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md'
-                    : 'text-gray-700 hover:bg-rose-50 hover:shadow-sm'
+
+            {/* Loop: renderiza cada item do menu mobile */}
+            {navItems.map(({ path, label, icon: Icon }, idx) => ( // idx: índice para animação em cascata
+              <button
+                key={path} // Identificador único obrigatório em listas
+                onClick={() => {
+                  setActiveItem(path); // Marca item como ativo
+                  setIsMobileMenuOpen(false); // Fecha o menu após clicar
+                }}
+                className={`relative flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ease-in-out overflow-hidden group ${activeItem === path
+                    ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md' // Estilo do item ativo
+                    : 'text-gray-700 hover:bg-rose-50 hover:shadow-sm' // Estilo padrão
                   }`}
+                style={{
+                  animationDelay: `${idx * 50}ms`, // Atraso progressivo: cada item aparece 50ms depois do anterior
+                  animation: isMobileMenuOpen ? 'slideInFromLeft 0.3s ease-out forwards' : 'none'
+                }}
               >
-                {/* Renderiza o ícone do item */}
-                <Icon className="w-5 h-5" />
-                {/* Renderiza o texto do item */}
-                <span className="font-semibold text-lg">{label}</span>
-              </Link>
+                {/* Efeito de brilho deslizante ao passar o dedo/mouse (apenas itens não ativos) */}
+                {activeItem !== path && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-rose-100 to-red-100 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                )}
+
+                {/* Ícone do item */}
+                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110' // Só cresce no hover se não estiver ativo
+                  }`} />
+
+                {/* Texto do item do menu */}
+                <span className="font-semibold text-lg relative z-10">{label}</span>
+              </button>
             ))}
           </div>
         </div>
-      </div>
+      </div> {/* Fim do container principal */}
+
+      {/* Animação CSS Customizada */}
+      <style>{`
+        /* 
+          Animação slideInFromLeft:
+          Usada nos itens do menu mobile para aparecerem da esquerda com fade-in
+        */
+        @keyframes slideInFromLeft {
+          from {
+            opacity: 0; /* Totalmente invisível */
+            transform: translateX(-20px); /* 20px para a esquerda */
+          }
+          to {
+            opacity: 1; /* Totalmente visível */
+            transform: translateX(0); /* Posição original */
+          }
+        }
+      `}</style>
     </nav>
   );
 };
 
-// Exporta o componente para uso em outras partes da aplicação
+// Exporta o componente para ser usado em outras partes do projeto
 export default Navigation;
