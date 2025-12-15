@@ -1,19 +1,25 @@
-// Importações do React e bibliotecas externas
+// Importações necessárias do React e bibliotecas externas
 import React, { useState } from 'react';
 import { Home, AlertCircle, Users, MapPin, Heart } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Componente Navigation: Barra de navegação principal do site
 const Navigation = () => {
+
+  // Hook useNavigate: permite navegar programaticamente entre páginas
+  const navigate = useNavigate();
+  
+  // Hook useLocation: retorna informações sobre a URL atual
+  const location = useLocation();
 
   // Estado para controlar se o menu mobile está aberto ou fechado
   // Valor inicial: false (menu fechado)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Estado para saber qual item do menu está ativo/selecionado
-  // Valor inicial: '/' (página inicial)
-  const [activeItem, setActiveItem] = useState('/');
+  // Pega diretamente a URL atual usando location.pathname, o que garante que o item ativo sempre reflete a página real 
+  const activeItem = location.pathname;
 
-  // Dados do menu de navegação: Array com todos os itens do menu de navegação
+  // Dados do menu de navegação: Array com todos os itens do menu
   // Cada objeto contém: caminho da rota, texto a exibir, e ícone
   const navItems = [
     { path: '/', label: 'Início', icon: Home },
@@ -23,6 +29,20 @@ const Navigation = () => {
     { path: '/doacao', label: 'Metas de Doações', icon: Heart }
   ];
 
+  // NOVA FUNÇÃO: Centraliza a lógica de navegação
+  // Recebe o caminho de destino como parâmetro
+  const handleNavigation = (path) => {
+    // 1. Navega para a rota especificada usando React Router
+    navigate(path);
+    
+    // 2. Fecha o menu mobile (importante para dispositivos móveis)
+    setIsMobileMenuOpen(false);
+    
+    // 3. Faz scroll suave para o topo da página
+    // behavior: 'smooth' cria uma animação suave ao invés de pulo instantâneo
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Estrutura do componente   
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-4 border-rose-600">
@@ -31,15 +51,16 @@ const Navigation = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Flex container para alinhar logo e menu horizontalmente */}
-        <div className="flex items-center justify-between py-4">{/* justify-between: logo à esquerda, menu à direita */}
+        <div className="flex items-center justify-between py-4">
 
           {/* Logo (Esquerda) */}
           <div
-            className="flex items-center space-x-3 cursor-pointer group" // group: permite aplicar hover em elementos filhos
-            onClick={() => setActiveItem('/')} // Ao clicar, marca "Início" como ativo
+            className="flex items-center space-x-3 cursor-pointer group"
+            // CORRIGIDO: Agora usa handleNavigation para realmente navegar para home
+            onClick={() => handleNavigation('/')}
           >
             {/* Container do ícone de coração com efeitos */}
-            <div className="relative"> {/* relative: permite posicionar elementos absolutamente dentro */}
+            <div className="relative">
 
               {/* Ícone do coração */}
               <Heart className="w-10 h-10 text-red-600 fill-red-600 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg" />
@@ -64,24 +85,26 @@ const Navigation = () => {
           </div>
 
           {/* Menu Desktop (Visível apenas em telas grandes) */}
-          <div className="hidden lg:flex space-x-6"> {/* hidden: esconde em mobile | lg:flex: mostra em desktop */}
+          <div className="hidden lg:flex space-x-6">
             {/* Loop: renderiza um botão para cada item do menu */}
-            {navItems.map(({ path, label, icon: Icon }) => ( // map: percorre o array e cria elementos
+            {navItems.map(({ path, label, icon: Icon }) => (
               <button
-                key={path} // key: identificador único necessário em listas React
-                onClick={() => setActiveItem(path)} // Ao clicar, marca este item como ativo
+                key={path}
+                // CORRIGIDO: Usa handleNavigation para navegar de verdade
+                // Antes só mudava o estado visual, agora muda a rota real
+                onClick={() => handleNavigation(path)}
                 className={`relative flex items-center space-x-1.5 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ease-in-out text-lg group ${activeItem === path
                     ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md scale-105'
                     : 'text-gray-700 hover:bg-rose-50 hover:scale-105'
                   }`}
               >
                 {/* Efeito de brilho sutil que aparece ao passar o mouse (apenas em itens não ativos) */}
-                {activeItem !== path && ( // Renderização condicional: só mostra se NÃO for o item ativo
+                {activeItem !== path && (
                   <div className="absolute inset-0 bg-gradient-to-r from-rose-100 to-red-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 )}
 
                 {/* Ícone do menu */}
-                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110' // Só cresce no hover se não estiver ativo
+                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110'
                   }`} />
 
                 {/* Texto do menu */}
@@ -90,14 +113,11 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* Botçao Hamburger (Visível apenas em mobile) */}
+          {/* Botão Hamburger (Visível apenas em mobile) */}
           <button
             className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-rose-50 transition-all duration-300 ease-in-out shadow-sm hover:shadow-md relative overflow-hidden group"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} // Toggle: inverte o estado (abre/fecha menu)
-          /* 
-            lg:hidden: esconde em telas grandes (≥1024px)
-            overflow-hidden: esconde conteúdo que sair do botão (necessário para efeito ripple)
-          */
+            // Toggle: inverte o estado (abre/fecha menu)
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {/* Efeito ripple (ondulação) ao clicar no botão */}
             <div className="absolute inset-0 bg-rose-100 scale-0 group-active:scale-100 transition-transform duration-300 rounded-lg"></div>
@@ -106,15 +126,15 @@ const Navigation = () => {
             <div className="relative w-6 h-6">
 
               {/* Linha superior: vira diagonal quando menu está aberto */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-2.5' : 'top-1' // Se menu aberto: rotaciona 45° e move para baixo
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'rotate-45 translate-y-2.5' : 'top-1'
                 }`}></span>
 
               {/* Linha do meio: desaparece quando menu está aberto */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100 top-2.5' // Fica invisível e diminui
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100 top-2.5'
                 }`}></span>
 
               {/* Linha inferior: vira diagonal oposta quando menu está aberto */}
-              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 translate-y-2.5' : 'top-4' // Rotaciona -45° (direção oposta)
+              <span className={`absolute left-0 block w-full h-1 bg-current rounded-full transform transition-all duration-500 ease-in-out ${isMobileMenuOpen ? '-rotate-45 translate-y-2.5' : 'top-4'
                 }`}></span>
             </div>
           </button>
@@ -129,19 +149,21 @@ const Navigation = () => {
           <div className="flex flex-col space-y-2 pb-4 bg-white rounded-lg shadow-md">
 
             {/* Loop: renderiza cada item do menu mobile */}
-            {navItems.map(({ path, label, icon: Icon }, idx) => ( // idx: índice para animação em cascata
+            {navItems.map(({ path, label, icon: Icon }, idx) => (
               <button
-                key={path} // Identificador único obrigatório em listas
-                onClick={() => {
-                  setActiveItem(path); // Marca item como ativo
-                  setIsMobileMenuOpen(false); // Fecha o menu após clicar
-                }}
+                key={path}
+                // CORRIGIDO: Usa handleNavigation que:
+                // 1. Navega para a página
+                // 2. Fecha o menu mobile automaticamente
+                // 3. Faz scroll para o topo
+                onClick={() => handleNavigation(path)}
                 className={`relative flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 ease-in-out overflow-hidden group ${activeItem === path
-                    ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md' // Estilo do item ativo
-                    : 'text-gray-700 hover:bg-rose-50 hover:shadow-sm' // Estilo padrão
+                    ? 'bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-rose-50 hover:shadow-sm'
                   }`}
                 style={{
-                  animationDelay: `${idx * 50}ms`, // Atraso progressivo: cada item aparece 50ms depois do anterior
+                  // Atraso progressivo: cada item aparece 50ms depois do anterior
+                  animationDelay: `${idx * 50}ms`,
                   animation: isMobileMenuOpen ? 'slideInFromLeft 0.3s ease-out forwards' : 'none'
                 }}
               >
@@ -151,7 +173,7 @@ const Navigation = () => {
                 )}
 
                 {/* Ícone do item */}
-                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110' // Só cresce no hover se não estiver ativo
+                <Icon className={`w-5 h-5 relative z-10 transition-transform duration-300 ${activeItem === path ? '' : 'group-hover:scale-110'
                   }`} />
 
                 {/* Texto do item do menu */}
@@ -160,7 +182,7 @@ const Navigation = () => {
             ))}
           </div>
         </div>
-      </div> {/* Fim do container principal */}
+      </div>
 
       {/* Animação CSS Customizada */}
       <style>{`
