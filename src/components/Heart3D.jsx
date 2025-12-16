@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react"
 
 const Heart3D = ({ wingImageUrl = null }) => {
-  const [fillLevel, setFillLevel] = useState(0);
+  const [fillLevel, setFillLevel] = useState(0)
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFillLevel(prev => (prev >= 100 ? 0 : prev + 0.5));
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
+      setFillLevel((prev) => (prev >= 100 ? 0 : prev + 0.5))
+    }, 50)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="relative w-full h-full mx-auto">
@@ -41,31 +41,32 @@ const Heart3D = ({ wingImageUrl = null }) => {
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Renderiza asas apenas se a imagem for fornecida */}
         {wingImageUrl && (
-          <div 
-            className="absolute" 
-            style={{ 
-              left: '50%', 
-              top: '75%', 
-              transform: 'translate(-50%, -50%)',
-              width: '180%',
-              height: 'auto',
+          <div
+            className="absolute"
+            style={{
+              left: "50%",
+              top: "75%",
+              transform: "translate(-50%, -50%)",
+              width: "200%",
+              maxWidth: "300px",
+              height: "auto",
               zIndex: 0,
             }}
           >
-            <img 
+            <img
               src="/asas.png"
               alt="Asas de anjo"
               className="w-full h-full object-contain"
-              style={{ 
+              style={{
                 opacity: 0.95,
-                filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.3)) drop-shadow(0 0 40px rgba(251,113,133,0.2))',
+                filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 30px rgba(251,113,133,0.2))",
               }}
             />
           </div>
         )}
 
         {/* Coração - TAMANHO ORIGINAL */}
-        <div className="relative heart-float" style={{ zIndex: 10, width: '100%', maxWidth: '200px' }}>
+        <div className="relative heart-float" style={{ zIndex: 10, width: "100%", maxWidth: "180px" }}>
           <svg viewBox="0 0 200 128" className="w-full h-full" preserveAspectRatio="xMidYMin meet">
             <defs>
               <linearGradient id="bloodGradientDark" x1="0%" y1="100%" x2="0%" y2="0%">
@@ -81,19 +82,20 @@ const Heart3D = ({ wingImageUrl = null }) => {
               </radialGradient>
 
               <filter id="innerShadow">
-                <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
-                <feOffset dx="2" dy="4" result="offsetblur"/>
+                <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
+                <feOffset dx="2" dy="4" result="offsetblur" />
                 <feComponentTransfer>
-                  <feFuncA type="linear" slope="0.6"/>
+                  <feFuncA type="linear" slope="0.6" />
                 </feComponentTransfer>
                 <feMerge>
-                  <feMergeNode/>
-                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode />
+                  <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
 
               <clipPath id="heartClip">
-                <path d="M100,123 
+                <path
+                  d="M100,123 
                          C100,123 20,83 20,43 
                          C20,16 42,0 62,0 
                          C80,0 92,10 100,22 
@@ -105,7 +107,7 @@ const Heart3D = ({ wingImageUrl = null }) => {
             </defs>
 
             {/* Sombra do coração */}
-            <path 
+            <path
               d="M100,126 
                  C100,126 20,83 20,43 
                  C20,16 42,0 62,0 
@@ -119,7 +121,7 @@ const Heart3D = ({ wingImageUrl = null }) => {
             />
 
             {/* Contorno do coração */}
-            <path 
+            <path
               d="M100,123 
                  C100,123 20,83 20,43 
                  C20,16 42,0 62,0 
@@ -134,19 +136,19 @@ const Heart3D = ({ wingImageUrl = null }) => {
 
             {/* Sangue enchendo */}
             <g clipPath="url(#heartClip)">
-              <rect 
-                x="0" 
-                y={128 - (fillLevel * 1.23)}
-                width="200" 
+              <rect
+                x="0"
+                y={128 - fillLevel * 1.23}
+                width="200"
                 height={fillLevel * 1.23}
                 fill="url(#bloodGradientDark)"
                 className="transition-all duration-200"
               />
-              
+
               <path
-                d={`M 0,${128 - (fillLevel * 1.23)} 
-                    Q 50,${126 - (fillLevel * 1.23)} 100,${128 - (fillLevel * 1.23)} 
-                    T 200,${128 - (fillLevel * 1.23)} 
+                d={`M 0,${128 - fillLevel * 1.23} 
+                    Q 50,${126 - fillLevel * 1.23} 100,${128 - fillLevel * 1.23} 
+                    T 200,${128 - fillLevel * 1.23} 
                     L 200,128 L 0,128 Z`}
                 fill="url(#bloodGradientDark)"
                 opacity="0.5"
@@ -154,16 +156,10 @@ const Heart3D = ({ wingImageUrl = null }) => {
             </g>
 
             {/* Brilho 3D */}
-            <ellipse 
-              cx="70" 
-              cy="26"
-              rx="28" 
-              ry="38" 
-              fill="url(#shine3D)"
-            />
+            <ellipse cx="70" cy="26" rx="28" ry="38" fill="url(#shine3D)" />
 
             {/* Contorno forte */}
-            <path 
+            <path
               d="M100,123 
                  C100,123 20,83 20,43 
                  C20,16 42,0 62,0 
@@ -178,12 +174,12 @@ const Heart3D = ({ wingImageUrl = null }) => {
             />
 
             {/* Texto */}
-            <text 
-              x="100" 
-              y="65" 
-              textAnchor="middle" 
+            <text
+              x="100"
+              y="65"
+              textAnchor="middle"
               dominantBaseline="middle"
-              className="fill-white font-bold text-xl lg:text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+              className="fill-white font-bold text-lg sm:text-xl lg:text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
             >
               {Math.floor(fillLevel)}%
             </text>
@@ -191,7 +187,7 @@ const Heart3D = ({ wingImageUrl = null }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Heart3D;
+export default Heart3D
