@@ -4,17 +4,14 @@ import DonationGoal from '../components/DonationGoal';
 
 const DonationGoalPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-6">
-      <div className="max-w-4xl mx-auto px-3 lg:px-5">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Acompanhe a Jornada de Doações
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Cada doação é um passo importante para salvar vidas
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-red-50 py-8 lg:py-12">
+      <div className="container mx-auto px-4 lg:px-6">
+        
+        {/* Componente de Meta - CONTÉM TODO O CONTEÚDO */}
+        <div className="max-w-4xl mx-auto">
+          <DonationGoal />
         </div>
-        <DonationGoal />
+
       </div>
     </div>
   );
