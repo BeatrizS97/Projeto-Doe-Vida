@@ -80,7 +80,7 @@ const Home = () => {
                   </p>
                 </div>
 
-                <p className="text-base xs:text-lg sm:text-xl md:text-2xl leading-relaxed mb-6 sm:mb-8 opacity-95 max-w-md mx-auto md:mx-0 text-white/95 font-light px-2 sm:px-0">
+                <p className="text-lg xs:text-xl sm:text-lg md:text-xl leading-relaxed mb-6 sm:mb-8 opacity-95 max-w-md mx-auto md:mx-0 text-white/95 font-medium px-2 sm:px-0">
                   Transformando saudade em esperança através da doação de sangue. Cada gota salva vidas e mantém viva a
                   memória de quem amamos.
                 </p>
@@ -393,10 +393,10 @@ const Home = () => {
               </div>
               {/* Grid de valores - 2 cards lado a lado */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-8">
-                {/* Card 1: amor e solidariedade (melhorado para evitar repetição) */}
+                {/* Card 1: Amor em ação */}
                 <div
-                  className="bg-gradient-to-br from-rose-50 to-white rounded-xl p-4 sm:p-5 md:p-6 border border-rose-100 hover:border-rose-300 transform hover:scale-105 hover:-rotate-1 transition-all duration-300 hover:shadow-lg group/value cursor-pointer animate-slide-up"
-                  style={{ animationDelay: "0.2s" }}
+                  className="bg-gradient-to-br from-rose-50 to-white rounded-xl p-4 sm:p-5 md:p-6 border border-rose-100 hover:border-rose-300 transform hover:scale-105 hover:rotate-1 transition-all duration-300 hover:shadow-lg group/value cursor-pointer animate-slide-up"
+                  style={{ animationDelay: "0.1s" }}
                 >
                   <div className="flex items-start gap-3 sm:gap-4">
                     {/* Ícone com animação no hover */}
@@ -405,16 +405,16 @@ const Home = () => {
                     </div>
                     {/* Texto do valor */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-1 sm:mb-2 group-hover/value:text-rose-600 transition-colors">
+                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-0.5 group-hover/value:text-rose-600 transition-colors">
                         Amor em ação
                       </h4>
-                      <p className="text-sm sm:text-base md:text-base text-gray-600 leading-relaxed">
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         Convertendo luto em esperança e salvando vidas por meio da doação.
                       </p>
                     </div>
                   </div>
                   {/* Linha decorativa animada no hover */}
-                  <div className="mt-4 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
+                  <div className="mt-3 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
 
                 {/* Card 2: você faz parte */}
@@ -429,183 +429,17 @@ const Home = () => {
                     </div>
                     {/* Texto do valor */}
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-1 sm:mb-2 group-hover/value:text-rose-600 transition-colors">
+                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-0.5 group-hover/value:text-rose-600 transition-colors">
                         Você faz parte
                       </h4>
-                      <p className="text-sm sm:text-base md:text-base text-gray-600 leading-relaxed">
+                      <p className="text-sm text-gray-600 leading-relaxed">
                         Ao doar sangue, você se torna parte dessa corrente viva de amor e solidariedade.
                       </p>
                     </div>
                   </div>
-                  {/* Linha decorativa animada no hover */}
-                  <div className="mt-4 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
-                </div>
-              </div>
 
-              {/* Call-to-action final com efeitos visuais */}
-              <div className="relative animate-slide-up" style={{ animationDelay: "0.4s" }}>
-                {/* Blur de fundo com gradiente e pulso */}
-                <div
-                  className="absolute -inset-1 bg-gradient-to-r from-rose-400 via-red-500 to-rose-400 rounded-xl blur opacity-30 animate-pulse"
-                  style={{ animationDuration: "3s" }}
-                ></div>
-                {/* Card gradiente com múltiplos efeitos */}
-                <div className="relative bg-gradient-to-r from-rose-600 via-red-600 to-rose-600 rounded-xl p-6 sm:p-8 text-center overflow-hidden group/cta">
-                  {/* Efeito de brilho animado */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/cta:translate-x-full transition-transform duration-1000"></div>
-                  {/* Múltiplas partículas decorativas com diferentes animações */}
-                  <div
-                    className="absolute top-4 left-8 w-1.5 h-1.5 bg-white/40 rounded-full animate-ping"
-                    style={{ animationDuration: "3s" }}
-                  ></div>
-                  <div
-                    className="absolute top-8 right-12 w-1 h-1 bg-white/30 rounded-full animate-ping"
-                    style={{ animationDuration: "4s", animationDelay: "0.5s" }}
-                  ></div>
-                  <div
-                    className="absolute bottom-6 left-16 w-1.5 h-1.5 bg-white/35 rounded-full animate-ping"
-                    style={{ animationDuration: "3.5s", animationDelay: "1s" }}
-                  ></div>
-                  <div
-                    className="absolute bottom-8 right-8 w-1 h-1 bg-white/40 rounded-full animate-ping"
-                    style={{ animationDuration: "4.5s", animationDelay: "1.5s" }}
-                  ></div>
-                  {/* Ícones de gotas flutuantes */}
-                  <div
-                    className="absolute top-4 left-1/4 opacity-20 animate-bounce"
-                    style={{ animationDuration: "3s" }}
-                  >
-                    <Droplet className="w-4 h-4 text-white" />
-                  </div>
-                  <div
-                    className="absolute bottom-4 right-1/4 opacity-20 animate-bounce"
-                    style={{ animationDuration: "3.5s", animationDelay: "0.5s" }}
-                  >
-                    <Droplet className="w-3 h-3 text-white" />
-                  </div>
-                  {/* Conteúdo principal do CTA */}
-                  <div className="relative z-10">
-                    {/* Ícone central */}
-                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-full mb-3 sm:mb-4 group-hover/cta:scale-110 group-hover/cta:rotate-12 transition-all duration-300 shadow-lg">
-                      <Droplet
-                        className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-pulse"
-                        style={{ animationDuration: "2s" }}
-                      />
-                    </div>
-                    <p className="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed mb-2 sm:mb-3 drop-shadow-lg px-2">
-                      Seu sangue pode ser o milagre que alguém está esperando
-                    </p>
-                    {/* Decoração com pontos e linhas */}
-                    <div className="flex items-center justify-center gap-2 mt-4">
-                      <div className="h-0.5 w-8 bg-white/50 rounded-full group-hover/cta:w-12 transition-all duration-500"></div>
-                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-                      <div className="h-0.5 w-8 bg-white/50 rounded-full group-hover/cta:w-12 transition-all duration-500"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Seção nossa missão - card explicativo sobre a missão do projeto */}
-      <div className="container mx-auto px-6 sm:px-8 md:px-10 lg:px-12 pb-8 sm:pb-10 lg:pb-14">
-        <div className="max-w-4xl mx-auto">
-          {/* Cabeçalho da seção - REMOVIDO O SEPARADOR COM LINHAS E CORAÇÃO */}
-          {/* Agora temos apenas o título e subtítulo, sem decoração extra */}
-          <div className="text-center mb-6 sm:mb-8 animate-fade-in">
-            <h2 className="text-2xl xs:text-3xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Nossa Missão</h2>
-            <p className="text-sm xs:text-base sm:text-lg text-gray-600 font-normal leading-relaxed italic px-2">
-              Transformando vidas através da solidariedade
-            </p>
-          </div>
-          {/* Card principal com hover effect */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-rose-100 hover:shadow-2xl transition-all duration-500 animate-slide-up group/card relative">
-            {/* Linha decorativa no topo que aparece no hover */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-rose-400 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500"></div>
-            <div className="p-5 sm:p-6 md:p-8 lg:p-10">
-              {/* Citação principal com aspas decorativas */}
-              <div className="mb-6 sm:mb-8 relative animate-fade-in" style={{ animationDelay: "0.1s" }}>
-                {/* Aspas de abertura */}
-                <div
-                  className="absolute -left-1 sm:-left-2 -top-2 sm:-top-3 text-4xl sm:text-5xl md:text-6xl text-rose-200/40 font-serif leading-none animate-pulse"
-                  style={{ animationDuration: "3s" }}
-                >
-                  "
-                </div>
-                <p className="text-sm xs:text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed pl-6 sm:pl-8 md:pl-10 pr-4 sm:pr-6">
-                  Em memória de{" "}
-                  <span className="font-semibold text-rose-600 relative inline-block group/name">
-                    Rodrigo
-                    {/* Linha animada que aparece sob o nome no hover */}
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-rose-300 scale-x-0 group-hover/name:scale-x-100 transition-transform duration-300 origin-left"></span>
-                  </span>{" "}
-                  e{" "}
-                  <span className="font-semibold text-rose-600 relative inline-block group/name">
-                    Natalha
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-rose-300 scale-x-0 group-hover/name:scale-x-100 transition-transform duration-300 origin-left"></span>
-                  </span>
-                  , o Doe Vida existe para que o amor que sinto por eles não termine aqui. Esse projeto nasce da
-                  necessidade de manter viva a bondade, a gentileza e a pureza que eles deixaram no mundo, transformando
-                  esse amor em uma corrente viva de solidariedade por meio da doação de sangue.
-                </p>
-                {/* Aspas de fechamento */}
-                <div
-                  className="absolute -right-1 sm:-right-2 -bottom-2 sm:-bottom-3 text-4xl sm:text-5xl md:text-6xl text-rose-200/40 font-serif leading-none rotate-180 animate-pulse"
-                  style={{ animationDuration: "3s", animationDelay: "1s" }}
-                >
-                  "
-                </div>
-              </div>
-              {/* Grid de valores - 2 cards lado a lado */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-6 sm:mb-8">
-                {/* Card 1: amor e solidariedade (melhorado para evitar repetição) */}
-                <div
-                  className="bg-gradient-to-br from-rose-50 to-white rounded-xl p-4 sm:p-5 md:p-6 border border-rose-100 hover:border-rose-300 transform hover:scale-105 hover:-rotate-1 transition-all duration-300 hover:shadow-lg group/value cursor-pointer animate-slide-up"
-                  style={{ animationDelay: "0.2s" }}
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    {/* Ícone com animação no hover */}
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover/value:rotate-12 group-hover/value:scale-110 transition-all duration-300 shadow-md group-hover/value:shadow-xl">
-                      <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    {/* Texto do valor */}
-                    <div className="flex-1">
-                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-1 sm:mb-2 group-hover/value:text-rose-600 transition-colors">
-                        Amor em ação
-                      </h4>
-                      <p className="text-sm sm:text-base md:text-base text-gray-600 leading-relaxed">
-                        Convertendo luto em esperança e salvando vidas por meio da doação.
-                      </p>
-                    </div>
-                  </div>
                   {/* Linha decorativa animada no hover */}
-                  <div className="mt-4 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
-                </div>
-
-                {/* Card 2: você faz parte */}
-                <div
-                  className="bg-gradient-to-br from-rose-50 to-white rounded-xl p-4 sm:p-5 md:p-6 border border-rose-100 hover:border-rose-300 transform hover:scale-105 hover:rotate-1 transition-all duration-300 hover:shadow-lg group/value cursor-pointer animate-slide-up"
-                  style={{ animationDelay: "0.3s" }}
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    {/* Ícone com animação no hover */}
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover/value:rotate-12 group-hover/value:scale-110 transition-all duration-300 shadow-md group-hover/value:shadow-xl">
-                      <HeartHandshake className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    {/* Texto do valor */}
-                    <div className="flex-1">
-                      <h4 className="font-bold text-gray-800 text-base sm:text-lg mb-1 sm:mb-2 group-hover/value:text-rose-600 transition-colors">
-                        Você faz parte
-                      </h4>
-                      <p className="text-sm sm:text-base md:text-base text-gray-600 leading-relaxed">
-                        Ao doar sangue, você se torna parte dessa corrente viva de amor e solidariedade.
-                      </p>
-                    </div>
-                  </div>
-                  {/* Linha decorativa animada no hover */}
-                  <div className="mt-4 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
+                  <div className="mt-3 h-0.5 bg-gradient-to-r from-rose-200 to-transparent scale-x-0 group-hover/value:scale-x-100 transition-transform duration-500 origin-left"></div>
                 </div>
               </div>
 
