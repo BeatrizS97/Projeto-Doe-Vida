@@ -355,10 +355,10 @@ const Stories = () => {
                 </svg>
               </div>
               
-              <h3 className="text-xl font-bold mb-2">
+              <h3 className="text-xl font-bold mb-0.5">
                 Seja você também um doador!
               </h3>
-              <p className="text-[15px] lg:text-lg mb-4 opacity-95">
+              <p className="text-[15px] lg:text-lg mb-3 opacity-95">
                 Sua história pode inspirar outras pessoas a salvar vidas
               </p>
               
