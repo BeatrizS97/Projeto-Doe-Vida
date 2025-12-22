@@ -1,10 +1,13 @@
 import React from 'react';
 import { Calendar, Heart } from 'lucide-react';
 import { careTips, eligibility, donationFacts } from '../data/statistics';
+import { useNavigate } from "react-router-dom" // Hook para navegação entre rotas
 
 // Componente principal da página "Cuidados e Orientações"
 // Fornece orientações pré e pós-doação, critérios de elegibilidade e fatos relevantes
 const Care = () => {
+  const navigate = useNavigate()
+
   return (
     // Fundo suave com gradiente para criar contraste visual suave
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-red-50 py-6 sm:py-8 lg:py-12">
@@ -258,7 +261,7 @@ const Care = () => {
             {/* Elementos decorativos com animação de pulso */}
             <div className="absolute top-2 left-4 w-1.5 h-1.5 bg-white/30 rounded-full animate-ping"></div>
             <div className="absolute bottom-4 right-5 w-1 h-1 bg-white/40 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
-            
+
             <div className="relative z-10">
               {/* Ícone principal com múltiplas camadas de gradiente, sombra e animação */}
               <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto mb-0 relative group-hover:scale-105 transition-transform duration-500">
@@ -321,24 +324,27 @@ const Care = () => {
               </div>
 
               {/* Título sem margem inferior para evitar espaçamento desnecessário */}
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-0">
+              <h3 className="text-lg sm:text-xl lg:text-1xl font-bold mb-0">
                 Pronto para Doar?
               </h3>
-              
+
               {/* Subtítulo com espaçamento reduzido para manter coesão visual */}
               <p className="text-base sm:text-lg mb-2 opacity-95">
                 Encontre o hemocentro mais próximo
               </p>
-              
+
               {/* Botão de ação com navegação via window.location (revisar se roteamento via React Router for desejado) */}
-              <button 
-                onClick={() => window.location.href = '/hemocentros'}
-                className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-lg font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
+              <button
+                onClick={() => {
+                  navigate('/hemocentros');
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+                }}
+                className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-sm font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
               >
                 <span className="flex items-center justify-center gap-2">
                   Encontrar Hemocentro
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
               </button>

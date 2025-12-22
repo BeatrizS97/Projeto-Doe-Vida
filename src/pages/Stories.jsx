@@ -4,10 +4,12 @@ import { Droplet, TrendingDown, Heart } from 'lucide-react';
 import { testimonials, estadosMenosDoacao } from '../data/testimonials';
 import { bloodImpact } from '../data/statistics';
 import BloodTypesChart from '../components/BloodTypesChart';
+import { useNavigate } from 'react-router-dom';
 
 // Página de "Histórias de Vida": apresenta depoimentos reais, dados sobre doação, tipos sanguíneos e call-to-action
 // Usa Intersection Observer para animações progressivas ao rolar a página
 const Stories = () => {
+  const navigate = useNavigate();
   // Referências para elementos que terão animações disparadas pelo scroll
   const sectionRefs = useRef([]);
 
@@ -364,13 +366,12 @@ const Stories = () => {
               
               {/* Botão com navegação direta para /hemocentros + scroll suave ao topo */}
               <button 
-                onClick={() => {
-                  window.location.href = '/hemocentros';
-                  // Garante que, após navegação, a página comece do topo (boa prática UX)
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                }}
-                className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-lg font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
-              >
+  onClick={() => {
+    navigate('/hemocentros');
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+  }}
+  className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-sm font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
+>
                 {/* Efeito de brilho animado dentro do botão */}
                 <span className="flex items-center justify-center gap-2">
                   Encontrar Hemocentro
