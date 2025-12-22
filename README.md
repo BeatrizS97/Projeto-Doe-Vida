@@ -102,7 +102,7 @@ Para permissões especiais, entre em contato com a autora.
 Para dúvidas, permissões ou oportunidades:
 
 📧 **E-mail:**
-➡️ **[beatriz.santos.ads97@gmail.com]**
+➡️ **(beatriz.santos.ads97@gmail.com)**
 
 🔗 **LinkedIn:**
 ➡️ **[https://www.linkedin.com/in/beatrizsilvasantos-dev/](https://www.linkedin.com/in/beatrizsilvasantos-dev/)**
