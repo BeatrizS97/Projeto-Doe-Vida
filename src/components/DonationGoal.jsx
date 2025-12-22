@@ -1,88 +1,135 @@
 // src/components/DonationGoal.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Heart, Users, TrendingUp, Sparkles, Clock, Calendar, Timer, Info, RotateCcw, BarChart3, CheckCircle, Droplet } from 'lucide-react';
+import { Heart, Users, Clock, Calendar, Timer, Info, RotateCcw, BarChart3, CheckCircle, Droplet, Sparkles, TrendingUp, Award, X } from 'lucide-react';
+import { useDonation } from '../contexts/DonationContext';
+import { useCountAnimation } from '../hooks/useCountAnimation';
 
-// Componente de gráfico mensal
+// Componente de gráfico mensal MELHORADO
 const MonthlyChart = React.memo(({ monthlyData, showChart, setShowChart, donations }) => {
-  const { barHeights, barColors } = useMemo(() => {
+  const { barHeights, barColors, maxDonations } = useMemo(() => {
+    const max = Math.max(...monthlyData.map(item => item.donations), 5);
     const heights = monthlyData.map(item => {
-      const percentage = (item.donations / 5) * 100;
-      return item.donations > 0 ? percentage : 5;
+      const percentage = (item.donations / max) * 100;
+      return item.donations > 0 ? Math.max(percentage, 15) : 10;
     });
     const colors = monthlyData.map(item => {
       if (item.donations === 0) return 'from-gray-200 to-gray-300';
-      if (item.donations <= 2) return 'from-rose-400 to-red-500';
-      if (item.donations <= 4) return 'from-red-500 to-red-600';
+      if (item.donations <= Math.ceil(max * 0.3)) return 'from-rose-300 to-rose-500';
+      if (item.donations <= Math.ceil(max * 0.6)) return 'from-red-400 to-red-600';
       return 'from-red-600 to-red-700';
     });
-    return { barHeights: heights, barColors: colors };
+    return { barHeights: heights, barColors: colors, maxDonations: max };
   }, [JSON.stringify(monthlyData)]);
 
   return (
     <div className="mb-6 animate-slide-up">
       <button
         onClick={() => setShowChart(!showChart)}
-        className="w-full flex items-center justify-between text-left hover:bg-white/50 transition-all rounded-xl p-4 group bg-white/30 backdrop-blur-sm border border-white/40 shadow-lg"
+        className="w-full flex items-center justify-between text-left hover:bg-white/60 transition-all rounded-xl p-5 group bg-gradient-to-br from-white/40 to-white/30 backdrop-blur-md border-2 border-white/50 shadow-xl hover:shadow-2xl"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-            <BarChart3 className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-rose-500 via-red-600 to-rose-700 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-transparent transform translate-y-full group-hover:translate-y-[-100%] transition-transform duration-700"></div>
+            <BarChart3 className="w-7 h-7 text-white relative z-10" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-800 text-lg">Evolução Mensal {new Date().getFullYear() + 1}</h3>
-            <p className="text-xs text-gray-600 mt-0.5">
-              {showChart ? 'Clique para ocultar' : 'Acompanhe seu progresso'}
+            <h3 className="font-bold text-gray-800 text-xl flex items-center gap-2">
+              Evolução Mensal {new Date().getFullYear() + 1}
+              <TrendingUp className="w-5 h-5 text-rose-600" />
+            </h3>
+            <p className="text-sm text-gray-600 mt-1 font-medium">
+              {showChart ? 'Clique para ocultar' : 'Visualize seu progresso mensal'}
             </p>
           </div>
         </div>
-        <svg className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${showChart ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${showChart ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {showChart && (
-        <div className="mt-4 animate-fade-in">
-          <div className="bg-white/40 backdrop-blur-md rounded-xl p-5 border border-white/50 shadow-lg">
-            <div className="grid grid-cols-12 gap-1.5 items-end h-32 mb-4">
+        <div className="mt-5 animate-fade-in">
+          <div className="bg-gradient-to-br from-white/50 to-white/40 backdrop-blur-xl rounded-2xl p-6 border-2 border-white/60 shadow-2xl">
+            {/* Legenda */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-rose-200/50">
+              <div className="flex items-center gap-3">
+                <Award className="w-5 h-5 text-rose-600" />
+                <span className="text-sm font-bold text-gray-700">Máximo: {maxDonations} {maxDonations === 1 ? 'doação' : 'doações'}/mês</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-red-600 to-red-700"></div>
+                <span className="text-xs text-gray-600 font-semibold">Alto</span>
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-red-400 to-red-600 ml-2"></div>
+                <span className="text-xs text-gray-600 font-semibold">Médio</span>
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-rose-300 to-rose-500 ml-2"></div>
+                <span className="text-xs text-gray-600 font-semibold">Baixo</span>
+              </div>
+            </div>
+
+            {/* Gráfico */}
+            <div className="grid grid-cols-12 gap-2 items-end h-48 mb-5 relative">
+              {/* Linhas de grade horizontais */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="w-full h-px bg-gray-300/30"></div>
+                ))}
+              </div>
+
               {monthlyData.map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center justify-end h-full group cursor-pointer">
-                  <div className="h-5 flex items-end justify-center mb-1">
+                <div key={idx} className="flex flex-col items-center justify-end h-full group/bar cursor-pointer relative z-10">
+                  {/* Valor no topo */}
+                  <div className="h-6 flex items-end justify-center mb-2 transition-all duration-300">
                     {item.donations > 0 && (
-                      <span className="text-xs font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 rounded-full px-1.5 py-0.5 shadow-md">
+                      <span className="text-xs font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 rounded-full px-2 py-1 shadow-lg group-hover/bar:scale-125 transition-transform">
                         {item.donations}
                       </span>
                     )}
                   </div>
 
+                  {/* Barra */}
                   <div
-                    className={`w-full bg-gradient-to-t ${barColors[idx]} rounded-t-md transition-all duration-500 hover:brightness-110 hover:shadow-md hover:scale-y-110 border-b-2 border-red-700 relative`}
+                    className={`w-full bg-gradient-to-t ${barColors[idx]} rounded-t-xl transition-all duration-500 hover:brightness-110 hover:shadow-xl hover:scale-105 border-b-4 border-red-800 relative group-hover/bar:border-rose-500`}
                     style={{
                       height: `${barHeights[idx]}%`,
-                      opacity: item.donations > 0 ? 1 : 0.3,
-                      minHeight: '10px'
+                      opacity: item.donations > 0 ? 1 : 0.2,
+                      minHeight: '20px'
                     }}
                   >
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap">
-                      <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded-md shadow-lg">
-                        {item.donations} {item.donations === 1 ? 'doação' : 'doações'}
+                    {/* Brilho interno */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/20 to-white/40 rounded-t-xl opacity-0 group-hover/bar:opacity-100 transition-opacity duration-300"></div>
+
+                    {/* Tooltip */}
+                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-20 whitespace-nowrap">
+                      <div className="bg-gray-900 text-white text-sm py-2 px-3 rounded-lg shadow-2xl border-2 border-rose-500">
+                        <div className="font-bold">{item.month}</div>
+                        <div className="text-xs">{item.donations} {item.donations === 1 ? 'doação' : 'doações'}</div>
                       </div>
                     </div>
                   </div>
 
-                  <span className="text-xs font-semibold text-gray-700 mt-2">
+                  {/* Mês */}
+                  <span className="text-sm font-bold text-gray-700 mt-3 group-hover/bar:text-rose-600 transition-colors">
                     {item.month}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-rose-200/50 pt-3">
-              <div className="flex items-center justify-center gap-2 bg-gradient-to-r from-rose-50 to-red-50 rounded-lg py-2 px-3">
-                <Droplet className="w-4 h-4 text-rose-600" />
-                <p className="text-sm text-gray-700 font-bold">
-                  Total em {new Date().getFullYear() + 1}:
-                  <span className="text-rose-700 ml-1.5">{donations}</span>
-                </p>
+            {/* Rodapé com estatísticas */}
+            <div className="grid grid-cols-2 gap-4 pt-5 border-t-2 border-rose-200/50">
+              <div className="flex items-center justify-center gap-3 bg-gradient-to-r from-rose-50 to-red-50 rounded-xl py-3 px-4 shadow-md">
+                <Droplet className="w-5 h-5 text-rose-600" />
+                <div className="text-center">
+                  <p className="text-xs text-gray-600 font-semibold">Total em {new Date().getFullYear() + 1}</p>
+                  <p className="text-2xl font-bold text-rose-700">{donations}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-3 bg-gradient-to-r from-rose-50 to-red-50 rounded-xl py-3 px-4 shadow-md">
+                <Heart className="w-5 h-5 text-red-600" />
+                <div className="text-center">
+                  <p className="text-xs text-gray-600 font-semibold">Vidas Salvas</p>
+                  <p className="text-2xl font-bold text-red-700">{donations * 4}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -92,60 +139,163 @@ const MonthlyChart = React.memo(({ monthlyData, showChart, setShowChart, donatio
   );
 });
 
-// Componente principal - COMPLETO E FUNCIONAL
+// Modal de seleção de gênero
+const GenderModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[200] animate-fade-in p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative animate-scale-in border-4 border-rose-200">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <X className="w-6 h-6 text-gray-600" />
+        </button>
+
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+            <Heart className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Confirmar Doação</h2>
+          <p className="text-gray-600">Selecione seu gênero para calcularmos corretamente o intervalo entre doações</p>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={() => onConfirm('male')}
+            className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+          >
+            <span>♂</span>
+            Masculino
+            <span className="text-sm font-normal">(60 dias)</span>
+          </button>
+
+          <button
+            onClick={() => onConfirm('female')}
+            className="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white rounded-2xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+          >
+            <span>♀</span>
+            Feminino
+            <span className="text-sm font-normal">(90 dias)</span>
+          </button>
+        </div>
+
+        <p className="text-xs text-gray-500 text-center mt-6">
+          <Info className="w-3 h-3 inline mr-1" />
+          Essa informação é usada apenas para calcular o período de intervalo recomendado entre doações
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Componente principal
 const DonationGoal = () => {
-  const [donations, setDonations] = useState(0);
-  const [lastDonation, setLastDonation] = useState(null);
+  const {
+    donations,
+    setDonations,
+    lastDonation,
+    setLastDonation,
+    monthlyData,
+    setMonthlyData,
+    goal,
+    livesSaved,
+    targetYear,
+    TEST_MODE
+  } = useDonation();
+
   const [canDonate, setCanDonate] = useState(true);
   const [daysUntilNext, setDaysUntilNext] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [confetti, setConfetti] = useState([]);
+  const [glitter, setGlitter] = useState([]);
   const [justDonated, setJustDonated] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [progressAnimation, setProgressAnimation] = useState(false);
-  const [monthlyData, setMonthlyData] = useState([]);
   const [showChart, setShowChart] = useState(false);
+  const [showGenderModal, setShowGenderModal] = useState(false);
+  const [userGender, setUserGender] = useState(null);
 
-  const TEST_MODE = true;
-  const goal = TEST_MODE ? 1 : 500;
-  const currentYear = new Date().getFullYear();
-  const targetYear = currentYear + 1;
-  const livesSaved = donations * 4;
   const percentage = Math.min((donations / goal) * 100, 100);
-  const COOLDOWN_DAYS = 60;
+  const COOLDOWN_DAYS_MALE = 60;
+  const COOLDOWN_DAYS_FEMALE = 90;
+
+  // Animações de contagem
+  const animatedDonations = useCountAnimation(donations, 1500);
+  const animatedGoal = useCountAnimation(goal, 2000);
+  const animatedLives = useCountAnimation(livesSaved, 1800);
+  const animatedRemaining = useCountAnimation(goal - donations, 1600);
 
   useEffect(() => {
-    const savedDonations = localStorage.getItem('totalDonations');
-    const savedLastDate = localStorage.getItem('lastDonationDate');
-    const savedMonthly = localStorage.getItem('monthlyDonations');
-
-    if (savedDonations) setDonations(parseInt(savedDonations));
-    if (savedLastDate) {
-      const lastDate = new Date(savedLastDate);
-      setLastDonation(lastDate);
-      checkCanDonate(lastDate);
+    const savedGender = localStorage.getItem('userGender');
+    if (savedGender) {
+      setUserGender(savedGender);
     }
-    if (savedMonthly) {
-      const parsed = JSON.parse(savedMonthly);
-      parsed.length !== 12 ? initializeMonthlyData() : setMonthlyData(parsed);
+
+    if (lastDonation) {
+      checkCanDonate(lastDonation, savedGender);
+    }
+  }, [lastDonation]);
+
+  const checkCanDonate = (lastDate, gender = userGender) => {
+    if (!lastDate) {
+      setCanDonate(true);
+      setDaysUntilNext(0);
+      return;
+    }
+
+    const cooldownDays = gender === 'female' ? COOLDOWN_DAYS_FEMALE : COOLDOWN_DAYS_MALE;
+    const now = new Date();
+    const diffTime = Math.abs(now - lastDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays >= cooldownDays) {
+      setCanDonate(true);
+      setDaysUntilNext(0);
     } else {
-      initializeMonthlyData();
+      setCanDonate(false);
+      setDaysUntilNext(cooldownDays - diffDays);
     }
-  }, []);
-
-  const initializeMonthlyData = () => {
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const data = months.map((month, i) => ({
-      month,
-      donations: 0,
-      fullDate: new Date(targetYear, i, 1).toISOString()
-    }));
-    setMonthlyData(data);
-    localStorage.setItem('monthlyDonations', JSON.stringify(data));
   };
 
-  const updateMonthlyData = () => {
+  const generateConfetti = () => {
+    const colors = ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fee2e2', '#fbbf24', '#fcd34d'];
+    const shapes = ['circle', 'square', 'triangle'];
+
+    const pieces = Array.from({ length: 150 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.5,
+      duration: 3 + Math.random() * 2,
+      rotation: Math.random() * 720,
+      size: 6 + Math.random() * 8,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      swing: Math.random() * 60 - 30,
+      shape: shapes[Math.floor(Math.random() * shapes.length)]
+    }));
+    setConfetti(pieces);
+
+    // Glitter adicional
+    const glitterPieces = Array.from({ length: 80 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 2,
+      duration: 2 + Math.random() * 1,
+      size: 3 + Math.random() * 4,
+    }));
+    setGlitter(glitterPieces);
+  };
+
+  const showToastNotification = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 4000);
+  };
+
+  const updateMonthlyDataForDonation = () => {
     const now = new Date();
     const currentMonth = now.toLocaleString('pt-BR', { month: 'short' });
     const monthKey = currentMonth.replace('.', '').charAt(0).toUpperCase() + currentMonth.replace('.', '').slice(1);
@@ -158,52 +308,17 @@ const DonationGoal = () => {
     });
 
     setMonthlyData(updatedData);
-    localStorage.setItem('monthlyDonations', JSON.stringify(updatedData));
   };
 
-  const checkCanDonate = (lastDate) => {
-    if (!lastDate) {
-      setCanDonate(true);
-      setDaysUntilNext(0);
-      return;
-    }
-
-    const now = new Date();
-    const diffTime = Math.abs(now - lastDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays >= COOLDOWN_DAYS) {
-      setCanDonate(true);
-      setDaysUntilNext(0);
-    } else {
-      setCanDonate(false);
-      setDaysUntilNext(COOLDOWN_DAYS - diffDays);
-    }
-  };
-
-  const generateConfetti = () => {
-    const colors = ['#dc2626', '#991b1b', '#fee2e2', '#fecaca', '#fca5a5'];
-    const pieces = Array.from({ length: 100 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 1.2,
-      duration: 4 + Math.random() * 2,
-      rotation: Math.random() * 720,
-      size: 4 + Math.random() * 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      swing: Math.random() * 40 - 20,
-    }));
-    setConfetti(pieces);
-  };
-
-  const showToastNotification = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 4000);
-  };
-
-  const handleDonate = () => {
+  const handleDonateClick = () => {
     if (!canDonate || donations >= goal) return;
+    setShowGenderModal(true);
+  };
+
+  const handleGenderConfirm = (gender) => {
+    setShowGenderModal(false);
+    setUserGender(gender);
+    localStorage.setItem('userGender', gender);
 
     const now = new Date();
     const newTotal = donations + 1;
@@ -212,11 +327,8 @@ const DonationGoal = () => {
     setLastDonation(now);
     setCanDonate(false);
 
-    localStorage.setItem('totalDonations', newTotal.toString());
-    localStorage.setItem('lastDonationDate', now.toISOString());
-
-    updateMonthlyData();
-    checkCanDonate(now);
+    updateMonthlyDataForDonation();
+    checkCanDonate(now, gender);
 
     setJustDonated(true);
     setTimeout(() => setJustDonated(false), 500);
@@ -237,26 +349,43 @@ const DonationGoal = () => {
     if (newTotal === goal) {
       setShowCelebration(true);
       generateConfetti();
-      showToastNotification(`META ALCANÇADA! ${livesSaved + 4} vidas salvas!`);
+      showToastNotification(`🎉 META ALCANÇADA! ${livesSaved + 4} vidas salvas! 🎉`);
       setTimeout(() => {
         setShowCelebration(false);
         setConfetti([]);
-      }, 10000);
+        setGlitter([]);
+      }, 12000);
     }
   };
 
   const resetGoal = () => {
     if (window.confirm('Resetar todas as doações? Esta ação não pode ser desfeita.')) {
+      // Limpar estados locais
       setDonations(0);
       setLastDonation(null);
       setCanDonate(true);
       setDaysUntilNext(0);
       setShowCelebration(false);
       setConfetti([]);
+      setGlitter([]);
+      setUserGender(null);
+
+      // Limpar localStorage
       localStorage.setItem('totalDonations', '0');
       localStorage.removeItem('lastDonationDate');
-      initializeMonthlyData();
-      showToastNotification('Contador resetado com sucesso');
+      localStorage.removeItem('userGender');
+
+      // Reinicializar dados mensais
+      const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const data = months.map((month, i) => ({
+        month,
+        donations: 0,
+        fullDate: new Date(targetYear, i, 1).toISOString()
+      }));
+      setMonthlyData(data);
+      localStorage.setItem('monthlyDonations', JSON.stringify(data));
+
+      showToastNotification('Contador resetado com sucesso! ✅');
     }
   };
 
@@ -265,6 +394,13 @@ const DonationGoal = () => {
   return (
     <div className="relative">
       <div className="relative container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+
+        {/* Modal de Gênero */}
+        <GenderModal
+          isOpen={showGenderModal}
+          onClose={() => setShowGenderModal(false)}
+          onConfirm={handleGenderConfirm}
+        />
 
         {/* Toast Notification */}
         {showToast && (
@@ -286,34 +422,66 @@ const DonationGoal = () => {
           </div>
         )}
 
-        {/* Confetti */}
+        {/* Confetti e Glitter MELHORADOS */}
         {showCelebration && (
-          <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
-            {confetti.map((piece) => (
-              <div
-                key={piece.id}
-                className="absolute rounded-sm"
-                style={{
-                  left: `${piece.left}%`,
-                  top: '-5%',
-                  width: `${piece.size}px`,
-                  height: `${piece.size}px`,
-                  backgroundColor: piece.color,
-                  animation: `confetti ${piece.duration}s ease-out forwards`,
-                  animationDelay: `${piece.delay}s`,
-                  transform: `rotate(${piece.rotation}deg)`,
-                  '--swing': `${piece.swing}px`
-                }}
-              />
-            ))}
-          </div>
+          <>
+            {/* Confetti */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+              {confetti.map((piece) => (
+                <div
+                  key={`confetti-${piece.id}`}
+                  className="absolute"
+                  style={{
+                    left: `${piece.left}%`,
+                    top: '-10%',
+                    width: `${piece.size}px`,
+                    height: `${piece.size}px`,
+                    backgroundColor: piece.shape === 'circle' ? piece.color : 'transparent',
+                    borderRadius: piece.shape === 'circle' ? '50%' : '0',
+                    animation: `confetti ${piece.duration}s ease-out forwards`,
+                    animationDelay: `${piece.delay}s`,
+                    transform: `rotate(${piece.rotation}deg)`,
+                    '--swing': `${piece.swing}px`,
+                    ...(piece.shape === 'square' && {
+                      background: `linear-gradient(135deg, ${piece.color} 0%, ${piece.color}dd 100%)`,
+                    }),
+                    ...(piece.shape === 'triangle' && {
+                      width: 0,
+                      height: 0,
+                      borderLeft: `${piece.size / 2}px solid transparent`,
+                      borderRight: `${piece.size / 2}px solid transparent`,
+                      borderBottom: `${piece.size}px solid ${piece.color}`,
+                    })
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Glitter */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+              {glitter.map((piece) => (
+                <div
+                  key={`glitter-${piece.id}`}
+                  className="absolute rounded-full animate-pulse"
+                  style={{
+                    left: `${piece.left}%`,
+                    top: `${piece.top}%`,
+                    width: `${piece.size}px`,
+                    height: `${piece.size}px`,
+                    background: 'radial-gradient(circle, #ffd700 0%, #ffed4e 50%, transparent 70%)',
+                    boxShadow: '0 0 10px #ffd700, 0 0 20px #ffed4e',
+                    animation: `glitter ${piece.duration}s ease-in-out infinite`,
+                    animationDelay: `${piece.delay}s`,
+                  }}
+                />
+              ))}
+            </div>
+          </>
         )}
 
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          {/* Ícone Personalizado: Gotas de Sangue Animadas */}
           <div className="relative w-14 h-14 flex-shrink-0 mx-auto mb-4">
-            {/* Gota principal - formato de gota real */}
             <div className="absolute inset-0 animate-pulse" style={{ animationDuration: '2s' }}>
               <svg viewBox="0 0 56 56" className="w-full h-full drop-shadow-lg">
                 <defs>
@@ -323,36 +491,12 @@ const DonationGoal = () => {
                     <stop offset="100%" stopColor="#dc2626" />
                   </linearGradient>
                 </defs>
-                {/* Formato de gota de sangue - mais larga e gordinha */}
                 <path
                   d="M28 8 C28 8, 14 20, 14 32 C14 41, 20 49, 28 49 C36 49, 42 41, 42 32 C42 20, 28 8, 28 8 Z"
                   fill="url(#dropGradient)"
                 />
-                {/* Brilho interno */}
                 <ellipse cx="24" cy="26" rx="6" ry="8" fill="white" opacity="0.3" />
                 <ellipse cx="22" cy="24" rx="3" ry="4" fill="white" opacity="0.5" />
-              </svg>
-            </div>
-
-            {/* Gota pequena superior direita */}
-            <div className="absolute -top-1 -right-1 w-5 h-5 animate-bounce" style={{ animationDuration: '2s', animationDelay: '0.3s' }}>
-              <svg viewBox="0 0 20 20" className="w-full h-full drop-shadow-md">
-                <path
-                  d="M10 2 C10 2, 5 7, 5 11 C5 14, 7 16, 10 16 C13 16, 15 14, 15 11 C15 7, 10 2, 10 2 Z"
-                  fill="#dc2626"
-                />
-                <ellipse cx="8" cy="9" rx="2" ry="2.5" fill="white" opacity="0.4" />
-              </svg>
-            </div>
-
-            {/* Gota pequena inferior esquerda */}
-            <div className="absolute -bottom-1 -left-1 w-4 h-4 animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.6s' }}>
-              <svg viewBox="0 0 16 16" className="w-full h-full drop-shadow-md">
-                <path
-                  d="M8 1 C8 1, 4 5, 4 8 C4 10.5, 5.5 12, 8 12 C10.5 12, 12 10.5, 12 8 C12 5, 8 1, 8 1 Z"
-                  fill="#f43f5e"
-                />
-                <ellipse cx="6.5" cy="6.5" rx="1.5" ry="2" fill="white" opacity="0.4" />
               </svg>
             </div>
           </div>
@@ -368,47 +512,46 @@ const DonationGoal = () => {
             Meta de Doações {targetYear}
           </h1>
           <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-            Nossa meta coletiva é alcançar <strong className="text-rose-700">{goal.toLocaleString()}</strong> doações e salvar <strong className="text-rose-700">{(goal * 4).toLocaleString()} vidas</strong> em {targetYear}
+            Nossa meta coletiva é alcançar <strong className="text-rose-700 tabular-nums">{animatedGoal.toLocaleString()}</strong> doações e salvar <strong className="text-rose-700 tabular-nums">{(animatedGoal * 4).toLocaleString()} vidas</strong> em {targetYear}
           </p>
         </div>
 
-        {/* Card de informação pessoal */}
+        {/* Card de informação COLETIVA - MENSAGEM ATUALIZADA */}
         <div className="max-w-4xl mx-auto mb-6 animate-slide-up">
-          <div className="bg-gradient-to-r from-rose-100/80 to-red-100/80 backdrop-blur-sm rounded-xl p-4 border-l-4 border-rose-500 shadow-md">
+          <div className="bg-gradient-to-r from-amber-100/80 to-orange-100/80 backdrop-blur-sm rounded-xl p-4 border-l-4 border-amber-500 shadow-md">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
-                <Info className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                <Users className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 text-sm mb-1">
-                  Acompanhe seu impacto pessoal
+                  Impacto Coletivo da Comunidade
                 </h3>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Este é o seu espaço pessoal para registrar e acompanhar suas próprias doações de sangue. Mantenha o controle dos intervalos recomendados e visualize o impacto positivo que você está fazendo!
+                  Este contador representa o esforço conjunto de TODOS os doadores que utilizam nossa plataforma. Cada registro aqui contribui para nossa meta coletiva de salvar vidas através da doação de sangue!
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Contador e Progress */}
+        {/* Contador e Progress COM ANIMAÇÃO */}
         <div className="max-w-4xl mx-auto mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="flex justify-between items-end mb-4">
             <div>
               <p className="text-gray-600 text-sm font-semibold mb-1">Doações Realizadas</p>
-              <p className="text-4xl font-bold text-rose-700">{donations}</p>
+              <p className="text-4xl font-bold text-rose-700 tabular-nums">{animatedDonations}</p>
             </div>
             <div className="text-right">
               <p className="text-gray-600 text-sm font-semibold mb-1">Objetivo</p>
-              <p className="text-3xl font-bold text-gray-400">{goal}</p>
+              <p className="text-3xl font-bold text-gray-400 tabular-nums">{animatedGoal}</p>
             </div>
           </div>
 
           <div className="relative h-8 bg-white/50 backdrop-blur-sm rounded-full overflow-hidden shadow-inner border-2 border-white/60">
             <div
-              className={`absolute inset-y-0 left-0 bg-gradient-to-r from-rose-500 via-red-600 to-rose-600 rounded-full flex items-center justify-end pr-4 shadow-lg $(
-                progressAnimation ? 'animate-progress-grow' : 'transition-all duration-1000 ease-out'
-              )`}
+              className={`absolute inset-y-0 left-0 bg-gradient-to-r from-rose-500 via-red-600 to-rose-600 rounded-full flex items-center justify-end pr-4 shadow-lg ${progressAnimation ? 'animate-progress-grow' : 'transition-all duration-1000 ease-out'
+                }`}
               style={{ width: `${percentage}%` }}
             >
               {percentage > 15 && (
@@ -420,13 +563,13 @@ const DonationGoal = () => {
           </div>
         </div>
 
-        {/* Cards de Estatísticas */}
+        {/* Cards de Estatísticas COM ANIMAÇÃO */}
         <div className="max-w-4xl mx-auto grid grid-cols-2 gap-4 mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <div className="bg-gradient-to-br from-rose-100/80 to-red-100/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all border-2 border-rose-200/50 group cursor-default">
             <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-md group-hover:scale-110 transition-transform">
               <Heart className="w-6 h-6 text-white" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{livesSaved}</p>
+            <p className="text-2xl font-bold text-gray-900 tabular-nums">{animatedLives}</p>
             <p className="text-xs text-gray-700 font-semibold mt-1">Vidas Salvas</p>
           </div>
 
@@ -434,12 +577,12 @@ const DonationGoal = () => {
             <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-2 shadow-md group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6 text-white" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{goal - donations}</p>
+            <p className="text-2xl font-bold text-gray-900 tabular-nums">{animatedRemaining}</p>
             <p className="text-xs text-gray-700 font-semibold mt-1">Restantes</p>
           </div>
         </div>
 
-        {/* Gráfico Mensal */}
+        {/* Gráfico Mensal MELHORADO */}
         {donations > 0 && (
           <div data-chart-container className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <MonthlyChart
@@ -482,7 +625,7 @@ const DonationGoal = () => {
                   <p className="text-gray-700 text-sm mb-2 font-semibold">
                     Próxima doação disponível em
                   </p>
-                  <p className="text-rose-700 font-bold text-3xl">
+                  <p className="text-rose-700 font-bold text-3xl tabular-nums">
                     {daysUntilNext}
                   </p>
                   <p className="text-gray-600 text-xs font-semibold mt-1">
@@ -493,46 +636,45 @@ const DonationGoal = () => {
                 <div className="flex items-start gap-2 text-gray-700 text-xs bg-blue-50/80 backdrop-blur-sm p-2.5 rounded-lg border border-blue-200/50">
                   <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    <strong>Importante:</strong> Homens devem aguardar 60 dias e mulheres 90 dias entre doações.
+                    <strong>Importante:</strong> O intervalo foi calculado com base no seu gênero ({userGender === 'female' ? 'feminino - 90 dias' : 'masculino - 60 dias'}).
                   </p>
                 </div>
               </div>
             </div>
           </div>
         )}
-
-        {/* Botão Principal e Celebração */}
         {!showCelebration ? (
           <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.5s' }}>
-            <button
-              onClick={handleDonate}
-              disabled={!canDonate || donations >= goal}
-              className={`w-full py-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg mb-4 $(
-                !canDonate
-                  ? 'bg-gray-300 text-gray-600 cursor-not-allowed border-2 border-gray-400'
-                  : donations >= goal
-                  ? 'bg-gray-300 text-gray-600 cursor-not-allowed border-2 border-gray-400'
-                  : 'bg-gradient-to-r from-rose-600 to-red-600 text-white hover:shadow-xl transform hover:scale-105 active:scale-95 hover:from-rose-700 hover:to-red-700'
-              ) ${justDonated ? 'animate-pulse' : ''}`}
-            >
-              {!canDonate ? (
-                <>
-                  <Clock className="w-5 h-5" />
-                  Aguarde {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'}
-                </>
-              ) : donations >= goal ? (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Meta Alcançada!
-                </>
-              ) : (
-                <>
-                  <Heart className="w-5 h-5 fill-current" />
-                  Registrar Doação
-                </>
-              )}
-            </button>
-
+            {/* Adicionado mb-6 para afastar mais dos cards abaixo */}
+            <div className="flex justify-center mb-6"> {/* Container para centralizar o botão */}
+              <button
+                onClick={handleDonateClick}
+                disabled={!canDonate || donations >= goal}
+                className={`py-4 px-8 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${!canDonate
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed border-2 border-gray-400'
+                    : donations >= goal
+                      ? 'bg-gray-300 text-gray-600 cursor-not-allowed border-2 border-gray-400'
+                      : 'bg-gradient-to-r from-rose-600 to-red-600 text-white hover:shadow-xl transform hover:scale-105 active:scale-95 hover:from-rose-700 hover:to-red-700'
+                  } ${justDonated ? 'animate-pulse' : ''}`}
+              >
+                {!canDonate ? (
+                  <>
+                    <Clock className="w-5 h-5" />
+                    Aguarde {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'}
+                  </>
+                ) : donations >= goal ? (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Meta Alcançada!
+                  </>
+                ) : (
+                  <>
+                    <Heart className="w-5 h-5 fill-current" />
+                    Registrar Doação
+                  </>
+                )}
+              </button>
+            </div>
             {lastDonation && canDonate && (
               <p className="text-center text-sm text-gray-600 flex items-center justify-center gap-2 font-semibold mb-4">
                 <Calendar className="w-4 h-4" />
@@ -541,25 +683,44 @@ const DonationGoal = () => {
             )}
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto text-center py-8 bg-gradient-to-br from-amber-100/80 to-amber-200/80 backdrop-blur-sm rounded-xl shadow-lg border-2 border-amber-400 mb-6 animate-slide-up">
-            <div className="bg-gradient-to-br from-amber-500 to-amber-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
+
+          <div className="max-w-4xl mx-auto text-center py-12 bg-gradient-to-br from-amber-100/90 to-yellow-200/90 backdrop-blur-sm rounded-3xl shadow-2xl border-4 border-amber-400 mb-6 animate-scale-in relative overflow-hidden">
+            {/* Efeito de brilho animado */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
+
+            <div className="relative z-10">
+              <div className="bg-gradient-to-br from-amber-500 to-yellow-600 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce shadow-2xl border-4 border-white">
+                <Sparkles className="w-12 h-12 text-white" />
+              </div>
+
+              <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-red-600 mb-3 animate-pulse">
+                🎉 META ALCANÇADA! 🎉
+              </h3>
+
+              <div className="inline-block bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-4 mb-4 border-2 border-amber-400 shadow-xl">
+                <p className="text-3xl font-extrabold text-gray-900 mb-1 tabular-nums">
+                  {livesSaved} VIDAS
+                </p>
+                <p className="text-lg font-bold text-rose-600">
+                  foram salvas por vocês!
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center gap-3 text-amber-800 text-lg font-bold">
+                <Heart className="w-6 h-6 text-rose-600 fill-current animate-pulse" />
+                <span>Obrigado a todos os doadores!</span>
+                <Heart className="w-6 h-6 text-rose-600 fill-current animate-pulse" />
+              </div>
+
+              <p className="mt-6 text-sm text-gray-700 font-medium">
+                Juntos, vocês transformaram {goal} doações em esperança e vida! ✨
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-rose-700 mb-2">
-              🎉 Meta Alcançada! 🎉
-            </h3>
-            <p className="text-xl font-bold text-gray-900 mb-2">
-              {livesSaved} vidas salvas
-            </p>
-            <p className="text-base text-gray-700 flex items-center justify-center gap-2">
-              <Heart className="w-5 h-5 text-rose-700 fill-current" />
-              Obrigado por salvar vidas!
-            </p>
           </div>
         )}
 
-        {/* Botão Reset */}
-        {(donations > 0 || TEST_MODE) && (
+        {/*Botão Reset -- Removido para evitar uso indevido
+         {(donations > 0 || TEST_MODE) && (
           <div className="max-w-4xl mx-auto">
             <button
               onClick={resetGoal}
@@ -569,122 +730,221 @@ const DonationGoal = () => {
               {TEST_MODE ? 'Resetar Contador (Teste)' : 'Resetar Contador'}
             </button>
           </div>
-        )}
+        )} */}
+        {/* Cards Informativos TOTALMENTE REDESENHADOS - TAMANHO REDUZIDO */}
+        <div className="max-w-5xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> {/* Reduzido gap de 8 para 6 */}
 
-        {/* Cards Informativos */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            {/* Card 1: Benefícios - Design Elevado - TAMANHO REDUZIDO */}
+            <div className="group relative">
+              {/* Blur de fundo reduzido */}
+              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-rose-100 overflow-hidden"> {/* Reduzido padding e border-radius */}
+                {/* Efeitos decorativos reduzidos */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-rose-100 to-transparent rounded-full blur-2xl opacity-50"></div>
+                <div className="absolute -bottom-6 -left-6 w-18 h-18 bg-gradient-to-tr from-red-100 to-transparent rounded-full blur-xl opacity-40"></div>
 
-          <div className="bg-white/40 backdrop-blur-md rounded-xl shadow-lg p-5 border border-white/50 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Heart className="w-5 h-5 text-rose-600" />
+                <div className="relative z-10">
+                  {/* Header do Card - TAMANHO AJUSTADO */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Benefícios de Doar</h3> {/* Reduzido de 2xl para xl */}
+                      <p className="text-sm text-rose-600 font-semibold">Transforme vidas através da doação</p> {/* Reduzido para xs */}
+                    </div>
+                    <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"> {/* Reduzido tamanho e border-radius */}
+                      <Heart className="w-6 h-6 text-white fill-current" /> {/* Reduzido ícone */}
+                    </div>
+                  </div>
+
+                  {/* Lista de Benefícios */}
+                  <div className="space-y-3"> {/* Reduzido gap de 4 para 3 */}
+                    {[
+                      { text: 'Salva até 4 vidas por doação', iconType: 'heart', color: 'rose' },
+                      { text: 'Renova o sangue naturalmente', iconType: 'refresh', color: 'red' },
+                      { text: 'Check-up gratuito de saúde', iconType: 'health', color: 'rose' }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-3 group/item"> {/* Reduzido gap de 4 para 3 */}
+                        <div className="relative flex-shrink-0">
+                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}> {/* Reduzido tamanho e border-radius */}
+                            <div className="w-5 h-5"> {/* Reduzido tamanho do ícone */}
+                              {item.iconType === 'heart' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="heartGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#fb7185" />
+                                      <stop offset="100%" stopColor="#f43f5e" />
+                                    </linearGradient>
+                                  </defs>
+                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartGrad2)" />
+                                </svg>
+                              )}
+                              {item.iconType === 'refresh' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="refreshGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#f43f5e" />
+                                      <stop offset="100%" stopColor="#dc2626" />
+                                    </linearGradient>
+                                  </defs>
+                                  <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="url(#refreshGrad2)" />
+                                </svg>
+                              )}
+                              {item.iconType === 'health' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="healthGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#ef4444" />
+                                      <stop offset="100%" stopColor="#dc2626" />
+                                    </linearGradient>
+                                  </defs>
+                                  <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z" fill="url(#healthGrad2)" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                          {/* Ponto decorativo */}
+                          <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity"></div> {/* Reduzido ponto */}
+                        </div>
+                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p> {/* Reduzido texto para sm */}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <h3 className="font-bold text-gray-800">Benefícios de Doar</h3>
             </div>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Salva até 4 vidas por doação</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Renova o sangue naturalmente</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Check-up gratuito de saúde</span>
-              </li>
-            </ul>
-          </div>
 
-          <div className="bg-white/40 backdrop-blur-md rounded-xl shadow-lg p-5 border border-white/50 hover:shadow-xl transition-all duration-300">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Info className="w-5 h-5 text-rose-600" />
+            {/* Card 2: Dicas - Design Elevado - TAMANHO REDUZIDO */}
+            <div className="group relative">
+              {/* Blur de fundo reduzido */}
+              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-red-100 overflow-hidden"> {/* Reduzido padding e border-radius */}
+                {/* Efeitos decorativos reduzidos */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-100 to-transparent rounded-full blur-2xl opacity-50"></div>
+                <div className="absolute -bottom-6 -left-6 w-18 h-18 bg-gradient-to-tr from-rose-100 to-transparent rounded-full blur-xl opacity-40"></div>
+
+                <div className="relative z-10">
+                  {/* Header do Card - TAMANHO AJUSTADO */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Dicas Importantes</h3> {/* Reduzido de 2xl para xl */}
+                      <p className="text-sm text-red-600 font-semibold">Cuide-se antes e depois</p> {/* Reduzido para xs */}
+                    </div>
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"> {/* Reduzido tamanho e border-radius */}
+                      <Info className="w-6 h-6 text-white" /> {/* Reduzido ícone */}
+                    </div>
+                  </div>
+
+                  {/* Lista de Dicas */}
+                  <div className="space-y-3"> {/* Reduzido gap de 4 para 3 */}
+                    {[
+                      { text: 'Homens: intervalo de 60 dias', iconType: 'clock', color: 'red' },
+                      { text: 'Mulheres: intervalo de 90 dias', iconType: 'calendar', color: 'rose' },
+                      { text: 'Esteja alimentado e hidratado', iconType: 'water', color: 'blue' }
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-3 group/item"> {/* Reduzido gap de 4 para 3 */}
+                        <div className="relative flex-shrink-0">
+                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'blue' ? 'from-blue-50 to-cyan-50' : item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}> {/* Reduzido tamanho e border-radius */}
+                            <div className="w-5 h-5"> {/* Reduzido tamanho do ícone */}
+                              {item.iconType === 'clock' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="clockGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#dc2626" />
+                                      <stop offset="100%" stopColor="#991b1b" />
+                                    </linearGradient>
+                                  </defs>
+                                  <circle cx="12" cy="12" r="10" fill="url(#clockGrad2)" />
+                                  <path d="M12 6v6l4 2" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none" />
+                                </svg>
+                              )}
+                              {item.iconType === 'calendar' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="calendarGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#ef4444" />
+                                      <stop offset="100%" stopColor="#dc2626" />
+                                    </linearGradient>
+                                  </defs>
+                                  <rect x="3" y="4" width="18" height="18" rx="2" fill="url(#calendarGrad2)" />
+                                  <line x1="16" y1="2" x2="16" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                                  <line x1="8" y1="2" x2="8" y2="6" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                                  <line x1="3" y1="10" x2="21" y2="10" stroke="white" strokeWidth="2" />
+                                  <rect x="7" y="14" width="2" height="2" fill="white" rx="0.5" />
+                                  <rect x="11" y="14" width="2" height="2" fill="white" rx="0.5" />
+                                  <rect x="15" y="14" width="2" height="2" fill="white" rx="0.5" />
+                                </svg>
+                              )}
+                              {item.iconType === 'water' && (
+                                <svg viewBox="0 0 24 24" className="w-full h-full">
+                                  <defs>
+                                    <linearGradient id="waterGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                      <stop offset="0%" stopColor="#3b82f6" />
+                                      <stop offset="100%" stopColor="#1d4ed8" />
+                                    </linearGradient>
+                                  </defs>
+                                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="url(#waterGrad2)" />
+                                  <ellipse cx="9" cy="12" rx="2" ry="3" fill="white" opacity="0.3" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                          {/* Ponto decorativo */}
+                          <div className={`absolute -bottom-1 -right-1 w-2.5 h-2.5 ${item.color === 'blue' ? 'bg-blue-500' : 'bg-red-500'} rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity`}></div> {/* Reduzido ponto */}
+                        </div>
+                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p> {/* Reduzido texto para sm */}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <h3 className="font-bold text-gray-800">Dicas Importantes</h3>
             </div>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Homens: intervalo de 60 dias</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Mulheres: intervalo de 90 dias</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
-                  <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full"></div>
-                  <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <span>Esteja alimentado e hidratado</span>
-              </li>
-            </ul>
+
           </div>
         </div>
 
-        {/* Call to Action */}
-        <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.7s' }}>
-          <div className="relative bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 rounded-xl shadow-lg p-5 text-white text-center overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+        {/* Seção Junte-se à Nossa Causa - Versão Simplificada e Centralizada */}
+        <div className="max-w-4xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.7s' }}>
+          <div className="relative group">
+            {/* Removido o blur de fundo vermelho */}
 
-            <div className="absolute top-3 left-5 w-1.5 h-1.5 bg-white/30 rounded-full animate-ping"></div>
-            <div className="absolute bottom-4 right-6 w-1 h-1 bg-white/40 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+            <div className="relative bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-100 overflow-hidden">
+              {/* Removidos os efeitos decorativos vermelhos */}
 
-            <div className="relative z-10">
-              <h3 className="text-lg font-bold mb-2">
-                Junte-se à Nossa Causa
-              </h3>
-              <p className="text-sm opacity-90 mb-4">
-                Compartilhe sua jornada e inspire outras pessoas a doar sangue. Juntos, podemos salvar milhares de vidas!
-              </p>
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-semibold">
-                <Heart className="w-4 h-4" />
-                #DoeSangueDoVida
+              <div className="relative z-10 flex flex-col items-center text-center space-y-5">
+
+                {/* Badge superior - ESTILO CONSISTENTE COM O DESIGN ORIGINAL */}
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-rose-200 shadow-sm">
+                  <div className="w-5 h-5 bg-gradient-to-br from-rose-500 to-red-600 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-rose-700">Faça Parte da Mudança</span>
+                </div>
+
+                {/* Título */}
+                <div>
+                  <h3 className="text-2xl md:text-2xl font-bold text-gray-900 mb-1">
+                    Junte-se à Nossa Causa
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed max-w-xl">
+                    Compartilhe sua jornada e inspire outras pessoas a doar sangue. Juntos, podemos salvar milhares de vidas!
+                  </p>
+                </div>
+
+                {/* Tag */}
+                <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
+                  <Heart className="w-3.5 h-3.5 text-pink-600" />
+                  <span className="text-sm font-semibold text-gray-700">#DoeSangueDoeVida</span>
+                </div>
+
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Info Footer */}
-        <div className="max-w-4xl mx-auto text-center text-sm text-gray-700 mt-5 flex items-center justify-center gap-2 bg-white/40 backdrop-blur-md rounded-lg p-3 border border-white/50 font-semibold shadow-md">
-          <Info className="w-4 h-4 text-rose-600" />
-          Cada doação salva até 4 vidas
         </div>
       </div>
 
+      {/* Estilos das Animações */}
       <style>{`
         @keyframes confetti {
           0% {
-            transform: translateY(-5%) translateX(0) rotate(0deg);
+            transform: translateY(-10%) translateX(0) rotate(0deg);
             opacity: 1;
           }
           50% {
@@ -695,6 +955,45 @@ const DonationGoal = () => {
             transform: translateY(110vh) translateX(calc(var(--swing) * 1.5)) rotate(720deg);
             opacity: 0;
           }
+        }
+
+        @keyframes glitter {
+          0%, 100% {
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.5);
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+
+        @keyframes scale-in {
+          0% {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .animate-scale-in {
+          animation: scale-in 0.5s ease-out forwards;
         }
 
         @keyframes progress-grow {
