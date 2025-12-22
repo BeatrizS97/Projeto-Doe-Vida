@@ -5,8 +5,8 @@ import { useDonation } from '../contexts/DonationContext';
 import { useCountAnimation } from '../hooks/useCountAnimation';
 
 /**
- * Card animado de meta de doações para ser usado na Home
- * Mostra meta fixa de 500 e quantas faltam (animado)
+ * Card animado de meta de doações individual para ser usado na Home
+ * Mostra meta fixa de 2 doações por ano e quantas faltam
  */
 const AnimatedGoalCard = () => {
   const { donations, goal } = useDonation();
@@ -14,8 +14,9 @@ const AnimatedGoalCard = () => {
   // Calcula quantas doações faltam
   const remaining = Math.max(0, goal - donations);
 
-  // Animação para o número de doações que faltam
-  const animatedRemaining = useCountAnimation(remaining, 2000);
+  // Usa animação APENAS quando o valor mudar (não no mount inicial)
+  const animatedGoal = useCountAnimation(goal, 1500, false);
+  const animatedRemaining = useCountAnimation(remaining, 1500, false);
 
   return (
     <div className="md:col-span-2 bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 p-8 sm:p-8 flex flex-col items-center justify-center text-white relative overflow-hidden group min-h-[220px]">
@@ -51,39 +52,39 @@ const AnimatedGoalCard = () => {
         </div>
 
         <p className="text-lg sm:text-xl font-semibold mb-1 opacity-90 group-hover:opacity-100 transition-opacity">
-          Nossa meta é alcançar
+          Sua meta anual é
         </p>
 
-        {/* META FIXA - 500 doações */}
-        <p className="text-4xl sm:text-5xl lg:text-5xl font-extrabold mb-0.5 transform group-hover:scale-105 transition-transform duration-300">
-          500
+        {/* META - com animação somente quando mudar */}
+        <p className="text-4xl sm:text-5xl lg:text-5xl font-extrabold mb-0.5 transform group-hover:scale-105 transition-transform duration-300 tabular-nums">
+          {animatedGoal}
         </p>
 
-        <p className="text-lg sm:text-xl font-bold mb-3"> {/* <-- REDUZIDO DE mb-2/4 PARA mb-3 */}
-          doações este ano!
+        <p className="text-lg sm:text-xl font-bold mb-3">
+          {animatedGoal === 1 ? 'doação' : 'doações'} até {new Date().getFullYear() + 1}
         </p>
 
         {/* Mensagem adicional com divisor - MOSTRA QUANTAS FALTAM */}
         <div className="mt-3 sm:mt-5 pt-4 sm:pt-5 border-t border-white/30">
           {remaining > 0 ? (
             <div>
-              <p className="text-lg sm:text-xl font-medium opacity-90 mb-0.5"> {/* <-- REDUZIDO mb-1 → mb-0.5 */}
-                Faltam
+              <p className="text-lg sm:text-xl font-medium opacity-90 mb-0.5">
+                {remaining === goal ? 'Você ainda não doou' : 'Faltam'}
               </p>
-              <p className="text-3xl sm:text-4xl font-extrabold tabular-nums mb-0.5"> {/* <-- ADICIONADO mb-0.5 */}
-                {animatedRemaining.toLocaleString('pt-BR')}
+              <p className="text-3xl sm:text-4xl font-extrabold tabular-nums mb-0.5">
+                {animatedRemaining}
               </p>
-              <p className="text-lg sm:text-xl font-medium opacity-90 mt-0.5"> {/* <-- REDUZIDO mt-1 → mt-0.5 */}
-                doações
+              <p className="text-lg sm:text-xl font-medium opacity-90 mt-0.5">
+                doação{animatedRemaining > 1 || animatedRemaining === 0 ? 's' : ''}
               </p>
             </div>
           ) : (
             <div>
               <p className="text-2xl sm:text-3xl font-extrabold mb-1">
-                🎉 Meta Alcançada! 🎉
+                🎉 Meta Alcançada! 
               </p>
-              <p className="text-sm sm:text-base font-medium opacity-90">
-                Parabéns a todos!
+              <p className="text-sm sm:text-lg font-medium opacity-90">
+                Parabéns por cumprir sua meta anual!
               </p>
             </div>
           )}
