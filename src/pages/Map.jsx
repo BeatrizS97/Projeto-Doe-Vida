@@ -1,7 +1,7 @@
 // src/pages/Map.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Search, Phone, Navigation, AlertCircle, Heart } from 'lucide-react';
-import { hemocentros, cidadesParaEstado } from '../data/hemocentros';
+import { fetchHemocentrosFromJSON, cidadesParaEstado } from '../data/hemocentros'; // <-- Atualizado
 import { findNearestHemocentros } from '../utils/searchHelper';
 import Button from '../components/Button';
 
@@ -10,61 +10,126 @@ const Map = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedState, setSelectedState] = useState('all');
   const [noResults, setNoResults] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [allHemocentros, setAllHemocentros] = useState({}); // <-- NOVO ESTADO
 
-  const handleSearch = () => {
-    if (!city) {
+  // Carregar hemocentros do JSON (com cache e fallback)
+  useEffect(() => {
+    const loadHemocentros = async () => {
+      const data = await fetchHemocentrosFromJSON();
+      setAllHemocentros(data);
+    };
+    loadHemocentros();
+  }, []);
+
+  const handleSearch = async () => {
+    if (!city || !allHemocentros) { // <-- Verificar se os dados estão carregados
       setSearchResults([]);
       setNoResults(false);
       return;
     }
-    
-    const searchTerm = city.toLowerCase().trim();
-    const nearestResults = findNearestHemocentros(searchTerm, hemocentros);
-    
-    if (nearestResults && nearestResults.length > 0) {
-      setSearchResults(nearestResults);
-      setNoResults(false);
-      return;
-    }
 
-    const estadoDaCidade = cidadesParaEstado[searchTerm];
-    
-    if (estadoDaCidade && hemocentros[estadoDaCidade]) {
-      const results = hemocentros[estadoDaCidade].slice(0, 2).map(center => ({
-        ...center,
-        state: estadoDaCidade
-      }));
-      setSearchResults(results);
-      setNoResults(false);
-    } else {
-      setSearchResults([]);
+    setLoading(true);
+    setNoResults(false);
+
+    try {
+      const nearestResults = await findNearestHemocentros(city, allHemocentros); // <-- Usar dados carregados
+
+      if (nearestResults && nearestResults.length > 0) {
+        setSearchResults(nearestResults);
+      } else {
+        setSearchResults([]);
+        setNoResults(true);
+      }
+    } catch (error) {
+      console.error('Erro na busca:', error);
       setNoResults(true);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredHemocentros = selectedState === 'all' 
-    ? hemocentros 
-    : { [selectedState]: hemocentros[selectedState] };
+  // Filtrar hemocentros por estado (usando dados carregados)
+  const filteredHemocentros = selectedState === 'all'
+    ? allHemocentros // <-- Usar dados carregados
+    : { [selectedState]: allHemocentros[selectedState] }; // <-- Usar dados carregados
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-red-50 py-8 lg:py-12">
       <div className="container mx-auto px-4 lg:px-6">
-        
-        {/* Header Animado - SEM CORAÇÃO */}
+
+        {/* Header Animado - COM ÍCONE PERSONALIZADO DE PIN COM CORAÇÃO (IGUAL À HOME) */}
         <div className="text-center mb-8 animate-fade-in">
-          {/* Ícone de Localização IGUAL DA HOME */}
-          <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl shadow-lg animate-pulse" style={{ animationDuration: '3s' }}></div>
-            <div className="relative bg-gradient-to-br from-rose-500 to-red-600 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg">
-              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-            </div>
-            {/* Partícula */}
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-400 rounded-full animate-ping"></div>
+          {/* Container para efeitos de hover e glow */}
+          <div className="relative inline-block mb-4 group">
+            {/* Efeito de aura pulsante ao redor do ícone */}
+            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/20 to-red-600/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            {/* SVG do pin com coração — SEM FUNDO VERMELHO SÓLIDO */}
+            <svg viewBox="0 0 80 80" className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-lg group-hover:scale-105 transition-transform duration-300">
+              <defs>
+                <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: "#fb7185", stopOpacity: 1 }} />
+                  <stop offset="50%" style={{ stopColor: "#f43f5e", stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: "#dc2626", stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+
+              {/* Círculo de fundo suave (não é o container vermelho!) */}
+              <circle cx="40" cy="40" r="36" fill="#fce7f3" opacity="0.3" />
+
+              {/* Pin de localização com gradiente */}
+              <path
+                d="M40 12 C28 12, 20 20, 20 32 C20 47, 40 64, 40 64 C40 64, 60 47, 60 32 C60 20, 52 12, 40 12 Z"
+                fill="url(#grad3)"
+              />
+
+              {/* Coração dentro do pin */}
+              <path
+                d="M40 42 C33 38, 29 34, 29 29 C29 26, 31 24, 33 24 C35 24, 38 26, 40 29 C42 26, 45 24, 47 24 C49 24, 51 26, 51 29 C51 34, 47 38, 40 42 Z"
+                fill="#fff"
+                opacity="0.95"
+              />
+
+              {/* Círculos de pulsação animados — ANIMAÇÃO PRINCIPAL */}
+              <circle
+                cx="40"
+                cy="32"
+                r="20"
+                stroke="#fb7185"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.25"
+                className="animate-ping"
+                style={{ animationDuration: "2s" }}
+              />
+              <circle
+                cx="40"
+                cy="32"
+                r="24"
+                stroke="#fb7185"
+                strokeWidth="1"
+                fill="none"
+                opacity="0.15"
+                className="animate-ping"
+                style={{ animationDuration: "3s", animationDelay: "0.5s" }}
+              />
+
+              {/* Partículas decorativas animadas */}
+              <circle cx="66" cy="18" r="1.5" fill="#fb7185" className="animate-ping" opacity="0.6" />
+              <circle
+                cx="16"
+                cy="36"
+                r="1.5"
+                fill="#f43f5e"
+                className="animate-ping"
+                style={{ animationDelay: "0.5s" }}
+                opacity="0.5"
+              />
+            </svg>
           </div>
-          
+
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
             Hemocentro Perto de Mim
           </h1>
@@ -84,28 +149,35 @@ const Map = () => {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full px-4 py-3 border-2 border-rose-200 rounded-xl text-base focus:border-rose-500 focus:outline-none transition-all bg-white"
+                  className="w-full px-4 py-3 border-2 border-rose-200 rounded-xl text-lg focus:border-rose-500 focus:outline-none transition-all bg-white"
                 />
-                {/* Ícone de busca dentro do input */}
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {/* Ícone de busca REMOVIDO — redundante com o botão */}
               </div>
               <Button
                 onClick={handleSearch}
                 variant="primary"
-                size="medium"
-                className="w-full sm:w-auto px-6 py-3 font-bold"
+                size="large"
+                disabled={loading} // <-- DESABILITAR ENQUANTO CARREGA
+                className="w-full sm:w-auto px-6 py-3 font-bold text-base sm:text-lg"
               >
-                <span className="flex items-center gap-2">
-                  <Search className="w-5 h-5" />
-                  Buscar
-                </span>
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Buscando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Search className="w-5 h-5" />
+                    Buscar
+                  </span>
+                )}
               </Button>
             </div>
-            
+
             {/* Dica melhorada */}
             <div className="mt-3 flex items-start gap-2 bg-rose-50 p-3 rounded-lg border-l-4 border-rose-500">
               <svg className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
               </svg>
               <p className="text-gray-700 text-sm leading-relaxed">
                 <span className="font-semibold">Busca inteligente:</span> Calculamos a distância real e mostramos os 2 hemocentros mais próximos!
@@ -154,82 +226,86 @@ const Map = () => {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               {searchResults.map((center, idx) => (
-                <div 
-                  key={idx} 
-                  className="group bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-lg p-5 hover:shadow-2xl transition-all duration-300 border-2 border-rose-200 hover:border-rose-400 animate-slide-up"
+                <div
+                  key={idx}
+                  className="group bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition-all duration-300 border border-rose-100 hover:border-rose-300 animate-slide-up"
                   style={{ animationDelay: `${idx * 0.1}s` }}
                 >
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     {/* Ícone personalizado */}
                     <div className="relative flex-shrink-0">
-                      <div className="bg-gradient-to-br from-rose-500 to-red-600 rounded-xl w-14 h-14 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <div className="bg-gradient-to-br from-rose-500 to-red-600 rounded-xl w-14 h-14 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <MapPin className="w-7 h-7 text-white" />
                       </div>
                       {idx === 0 && (
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-md animate-pulse">
                           <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                           </svg>
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                         <h3 className="text-lg lg:text-xl font-bold text-gray-800 group-hover:text-rose-600 transition-colors">
                           {center.name}
                         </h3>
                         {idx === 0 && (
-                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full w-fit">
+                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full w-fit">
                             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                             </svg>
                             MAIS PRÓXIMO
                           </span>
                         )}
                       </div>
-                      
+
+                      {/* Distância em badge rosa */}
                       {center.distance && (
                         <div className="mb-3 inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg font-bold text-sm">
                           <Navigation className="w-4 h-4" />
                           <span>{center.distance} km de distância</span>
                         </div>
                       )}
-                      
-                      <div className="space-y-2 text-gray-600 text-sm lg:text-base">
+
+                      <div className="space-y-2 text-gray-600 text-sm lg:text-sm">
                         <div className="flex items-start gap-2">
-                          <MapPin className="w-4 h-4 text-rose-600 flex-shrink-0 mt-1" />
+                          <MapPin className="w-5 h-5 text-rose-600 flex-shrink-0 mt-1" />
                           <div>
-                            <p className="font-semibold text-gray-800">
+                            <p className="font-semibold text-gray-800 text-base sm:text-lg">
                               {center.city} - {center.state}
                               {center.district && ` • ${center.district}`}
                             </p>
-                            <p className="text-gray-600">{center.address}</p>
+                            <p className="text-gray-600 text-sm sm:text-lg">
+                              {center.address}
+                            </p>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 ml-6">
-                          <Phone className="w-4 h-4 text-rose-600" />
-                          <a 
+                          <Phone className="w-5 h-5 text-rose-600" />
+                          <a
                             href={`tel:${center.phone}`}
-                            className="text-rose-600 font-semibold hover:underline"
+                            className="text-rose-600 font-semibold hover:underline text-base sm:text-lg"
                           >
                             {center.phone}
                           </a>
                         </div>
                       </div>
-                      
-                      <div className="mt-3 ml-6">
+
+                      {/* Botão "Como Chegar" — ESTILIZADO COMO NA IMAGEM */}
+                      <div className="mt-4 ml-6">
                         <a
                           href={`https://www.google.com/maps/search/${encodeURIComponent(center.name + ' ' + center.city)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-semibold text-sm bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100 transition-all"
+                          className="inline-flex items-center gap-2 text-rose-600 hover:text-rose-700 font-semibold text-sm sm:text-sm bg-rose-50 px-4 py-2 rounded-lg hover:bg-rose-100 border border-rose-200 transition-all shadow-sm"
                         >
-                          <Navigation className="w-4 h-4" />
+                          <Navigation className="w-5 h-5" />
                           Como Chegar
                         </a>
                       </div>
@@ -250,23 +326,21 @@ const Map = () => {
             <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={() => setSelectedState('all')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm shadow-md ${
-                  selectedState === 'all'
-                    ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white scale-105'
-                    : 'bg-white text-gray-700 hover:bg-rose-50 hover:scale-105'
-                }`}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm shadow-md ${selectedState === 'all'
+                  ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white scale-105'
+                  : 'bg-white text-gray-700 hover:bg-rose-50 hover:scale-105'
+                  }`}
               >
                 Todos
               </button>
-              {Object.keys(hemocentros).sort().map((state) => (
+              {Object.keys(allHemocentros).sort().map((state) => ( // <-- Usar dados carregados
                 <button
                   key={state}
                   onClick={() => setSelectedState(state)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm shadow-md ${
-                    selectedState === state
-                      ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white scale-105'
-                      : 'bg-white text-gray-700 hover:bg-rose-50 hover:scale-105'
-                  }`}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all text-sm shadow-md ${selectedState === state
+                    ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white scale-105'
+                    : 'bg-white text-gray-700 hover:bg-rose-50 hover:scale-105'
+                    }`}
                 >
                   {state}
                 </button>
@@ -278,16 +352,16 @@ const Map = () => {
         {/* All Hemocentros List - LAYOUT OTIMIZADO */}
         <div className="max-w-6xl mx-auto mb-10">
           <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-6 text-center">
-            {selectedState === 'all' 
-              ? 'Todos os Hemocentros do Brasil' 
+            {selectedState === 'all'
+              ? 'Todos os Hemocentros do Brasil'
               : `Hemocentros - ${selectedState}`}
           </h2>
-          
+
           {/* Usando columns ao invés de grid para layout masonry */}
           <div className="columns-1 lg:columns-2 gap-5 space-y-5">
             {Object.entries(filteredHemocentros).sort().map(([state, centers]) => (
-              <div 
-                key={state} 
+              <div
+                key={state}
                 className="bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-lg p-5 border border-rose-100/50 hover:shadow-xl transition-all duration-300 animate-slide-up break-inside-avoid mb-5"
               >
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-rose-500">
@@ -296,14 +370,14 @@ const Map = () => {
                   </div>
                   <h3 className="text-lg font-bold text-gray-800">{state}</h3>
                 </div>
-                
+
                 <div className="space-y-3">
                   {centers.map((center, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className="group border-l-4 border-rose-500 pl-4 py-2 hover:bg-rose-50 transition-all rounded-r-lg"
                     >
-                      <h4 className="font-bold text-base text-gray-800 mb-1 group-hover:text-rose-600 transition-colors">
+                      <h4 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-rose-600 transition-colors">
                         {center.name}
                       </h4>
                       <p className="text-sm text-gray-600 mb-1">
@@ -311,7 +385,7 @@ const Map = () => {
                         {center.district && ` • ${center.district}`}
                       </p>
                       <p className="text-sm text-gray-700 mb-2">{center.address}</p>
-                      <a 
+                      <a
                         href={`tel:${center.phone}`}
                         className="inline-flex items-center gap-1 text-rose-600 font-semibold hover:underline text-sm"
                       >
@@ -329,7 +403,7 @@ const Map = () => {
         {/* Tips Section - INSPIRADO NA HOME/CARE */}
         <div className="max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.4s' }}>
           <div className="bg-gradient-to-br from-white to-rose-50/30 rounded-2xl shadow-xl p-6 border border-rose-100/50">
-            
+
             {/* Header da Seção */}
             <div className="text-center mb-6">
               {/* Ícone Personalizado: Gotas de Sangue Animadas */}
@@ -345,58 +419,58 @@ const Map = () => {
                       </linearGradient>
                     </defs>
                     {/* Formato de gota de sangue - mais larga e gordinha */}
-                    <path 
-                      d="M28 8 C28 8, 14 20, 14 32 C14 41, 20 49, 28 49 C36 49, 42 41, 42 32 C42 20, 28 8, 28 8 Z" 
+                    <path
+                      d="M28 8 C28 8, 14 20, 14 32 C14 41, 20 49, 28 49 C36 49, 42 41, 42 32 C42 20, 28 8, 28 8 Z"
                       fill="url(#dropGradientTips)"
                     />
                     {/* Brilho interno */}
-                    <ellipse cx="24" cy="26" rx="6" ry="8" fill="white" opacity="0.3"/>
-                    <ellipse cx="22" cy="24" rx="3" ry="4" fill="white" opacity="0.5"/>
+                    <ellipse cx="24" cy="26" rx="6" ry="8" fill="white" opacity="0.3" />
+                    <ellipse cx="22" cy="24" rx="3" ry="4" fill="white" opacity="0.5" />
                   </svg>
                 </div>
-                
+
                 {/* Gota pequena superior direita */}
                 <div className="absolute -top-1 -right-1 w-5 h-5 animate-bounce" style={{ animationDuration: '2s', animationDelay: '0.3s' }}>
                   <svg viewBox="0 0 20 20" className="w-full h-full drop-shadow-md">
-                    <path 
-                      d="M10 2 C10 2, 5 7, 5 11 C5 14, 7 16, 10 16 C13 16, 15 14, 15 11 C15 7, 10 2, 10 2 Z" 
+                    <path
+                      d="M10 2 C10 2, 5 7, 5 11 C5 14, 7 16, 10 16 C13 16, 15 14, 15 11 C15 7, 10 2, 10 2 Z"
                       fill="#dc2626"
                     />
-                    <ellipse cx="8" cy="9" rx="2" ry="2.5" fill="white" opacity="0.4"/>
+                    <ellipse cx="8" cy="9" rx="2" ry="2.5" fill="white" opacity="0.4" />
                   </svg>
                 </div>
-                
+
                 {/* Gota pequena inferior esquerda */}
                 <div className="absolute -bottom-1 -left-1 w-4 h-4 animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.6s' }}>
                   <svg viewBox="0 0 16 16" className="w-full h-full drop-shadow-md">
-                    <path 
-                      d="M8 1 C8 1, 4 5, 4 8 C4 10.5, 5.5 12, 8 12 C10.5 12, 12 10.5, 12 8 C12 5, 8 1, 8 1 Z" 
+                    <path
+                      d="M8 1 C8 1, 4 5, 4 8 C4 10.5, 5.5 12, 8 12 C10.5 12, 12 10.5, 12 8 C12 5, 8 1, 8 1 Z"
                       fill="#f43f5e"
                     />
-                    <ellipse cx="6.5" cy="6.5" rx="1.5" ry="2" fill="white" opacity="0.4"/>
+                    <ellipse cx="6.5" cy="6.5" rx="1.5" ry="2" fill="white" opacity="0.4" />
                   </svg>
                 </div>
               </div>
-              
+
               <h3 className="text-2xl font-bold text-gray-800 mb-2">
                 Antes de Ir ao Hemocentro
               </h3>
-              <p className="text-gray-600 text-sm">Prepare-se adequadamente para a doação</p>
+              <p className="text-gray-600 text-lg">Prepare-se adequadamente para a doação</p>
             </div>
-            
+
             {/* Cards de Dicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
+
               {/* Card 1 - Leve com você */}
               <div className="group bg-white rounded-xl p-4 border border-rose-100 hover:border-rose-300 hover:shadow-md transition-all duration-300">
                 <div className="flex items-center gap-3 mb-3">
                   {/* Ícone Documento */}
                   <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-red-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-all">
                     <svg className="w-6 h-6 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h4 className="font-bold text-base text-gray-800">Leve com você</h4>
+                  <h4 className="font-bold text-lg text-gray-800">Leve com você</h4>
                 </div>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2 group/item">
@@ -404,7 +478,7 @@ const Map = () => {
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Documento oficial com foto</span>
@@ -413,7 +487,7 @@ const Map = () => {
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Esteja bem alimentado</span>
@@ -422,31 +496,31 @@ const Map = () => {
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Tenha dormido bem</span>
                   </li>
                 </ul>
               </div>
-              
+
               {/* Card 2 - Horários */}
               <div className="group bg-white rounded-xl p-4 border border-rose-100 hover:border-rose-300 hover:shadow-md transition-all duration-300">
                 <div className="flex items-center gap-3 mb-3">
                   {/* Ícone Relógio */}
                   <div className="w-10 h-10 bg-gradient-to-br from-rose-100 to-red-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-all">
                     <svg className="w-6 h-6 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h4 className="font-bold text-base text-gray-800">Horários</h4>
+                  <h4 className="font-bold text-lg text-gray-800">Horários</h4>
                 </div>
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2 group/item">
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Ligue antes para confirmar</span>
@@ -455,7 +529,7 @@ const Map = () => {
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Alguns funcionam aos sábados</span>
@@ -464,18 +538,18 @@ const Map = () => {
                     <div className="relative w-4 h-4 flex-shrink-0 mt-0.5">
                       <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-500 rounded-full group-hover/item:scale-110 transition-transform"></div>
                       <svg className="absolute inset-0 w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"/>
+                        <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </div>
                     <span className="leading-relaxed">Chegue com antecedência</span>
                   </li>
                 </ul>
               </div>
-              
+
             </div>
           </div>
         </div>
-        
+
       </div>
     </div>
   );
