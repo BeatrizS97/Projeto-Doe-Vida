@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom" // Hook para navegação entre ro
 import Heart3D from "../components/Heart3D" // Componente de coração 3D customizado
 import Button from "../components/Button" // Componente de botão reutilizável
 import BloodDonationAnimation from "../components/BloodDonationAnimation" // Animação de doação de sangue
+import AnimatedGoalCard from "../components/AnimatedGoalCard" // Card animado de meta de doações
 
 // Componente principal da página Home
 const Home = () => {
@@ -196,22 +197,17 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Seção meta de doações - card dividido em duas colunas */}
+      {/* Seção meta de doações - COM CARD ANIMADO */}
       <div className="container mx-auto px-4 sm:px-8 md:px-10 lg:px-16 py-8 sm:py-10 lg:py-14">
-        <div className="max-w-4xl mx-auto mx-3 sm:mx-auto">
+        <div className="max-w-3xl mx-auto mx-3 sm:mx-auto"> {/* <-- Diminuído de 4xl para 3xl */}
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Grid de 5 colunas: 3 para conteúdo, 2 para visual */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
               {/* Coluna esquerda - informações (3/5 do espaço) */}
-              <div className="md:col-span-3 p-8 sm:p-8 md:p-8 lg:p-10">
-                {/* Cabeçalho com ícone de gotas animadas */}
-                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  {/* SVG de gotas de sangue com animações */}
+              <div className="md:col-span-3 p-8 sm:p-8 md:p-8 lg:p-10 flex flex-col"> {/* <-- REMOVIDO justify-center */}
+                <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
                   <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0">
-                    {/* Gota principal com pulso */}
                     <div className="absolute inset-0 animate-pulse" style={{ animationDuration: "2s" }}>
                       <svg viewBox="0 0 56 56" className="w-full h-full drop-shadow-lg">
-                        {/* Definição de gradiente */}
                         <defs>
                           <linearGradient id="dropGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#fb7185" />
@@ -219,17 +215,14 @@ const Home = () => {
                             <stop offset="100%" stopColor="#dc2626" />
                           </linearGradient>
                         </defs>
-                        {/* Forma da gota com gradiente */}
                         <path
                           d="M28 8 C28 8, 14 20, 14 32 C14 41, 20 49, 28 49 C36 49, 42 41, 42 32 C42 20, 28 8, 28 8 Z"
                           fill="url(#dropGradient)"
                         />
-                        {/* Brilhos para dar profundidade */}
                         <ellipse cx="24" cy="26" rx="6" ry="8" fill="white" opacity="0.3" />
                         <ellipse cx="22" cy="24" rx="3" ry="4" fill="white" opacity="0.5" />
                       </svg>
                     </div>
-                    {/* Gota pequena animada no canto superior direito */}
                     <div
                       className="absolute -top-1 -right-1 w-5 h-5 animate-bounce"
                       style={{ animationDuration: "2s", animationDelay: "0.3s" }}
@@ -242,7 +235,6 @@ const Home = () => {
                         <ellipse cx="8" cy="9" rx="2" ry="2.5" fill="white" opacity="0.4" />
                       </svg>
                     </div>
-                    {/* Gota pequena animada no canto inferior esquerdo */}
                     <div
                       className="absolute -bottom-1 -left-1 w-4 h-4 animate-bounce"
                       style={{ animationDuration: "2.5s", animationDelay: "0.6s" }}
@@ -256,33 +248,32 @@ const Home = () => {
                       </svg>
                     </div>
                   </div>
-                  {/* Título da seção */}
-                  <h2 className="text-3xl xs:text-3xl sm:text-3xl lg:text-3xl font-bold text-gray-800">
+                  <h2 className="text-3xl xs:text-3xl sm:text-3xl lg:text-3xl font-bold text-gray-800 mt-2"> {/* <-- Subido com mt-2 */}
                     Nossa Meta de Doações
                   </h2>
                 </div>
-                <p className="text-lg sm:text-lg lg:text-xl text-gray-700 mb-5 sm:mb-6 leading-relaxed">
+
+                {/* Parágrafo com texto justificado */}
+                <p className="text-lg sm:text-lg lg:text-xl text-gray-700 mb-6 sm:mb-8 lg:mb-10 leading-relaxed text-justify">
                   Estamos trabalhando para aumentar a conscientização sobre a importância da doação de sangue. Juntos,
                   podemos salvar mais vidas e honrar a memória de Rodrigo e Natalha.
                 </p>
-                {/* Botão para navegar para página de detalhes */}
+
+                {/* Botão aumentado e com melhor espaçamento acima */}
                 <Button
                   variant="primary"
                   size="large"
                   onClick={() => navigate("/doacao")}
-                  className="relative overflow-hidden group/btn transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 w-full sm:w-auto"
+                  className="relative overflow-hidden group/btn transform transition-all duration-300 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 w-full sm:w-auto py-3 px-6"
                 >
-                  {/* Efeito de brilho animado */}
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></span>
-                  {/* Partículas decorativas */}
                   <span className="absolute top-1 left-4 w-1 h-1 bg-white/40 rounded-full animate-ping"></span>
                   <span
                     className="absolute bottom-1 right-6 w-1.5 h-1.5 bg-white/40 rounded-full animate-ping"
                     style={{ animationDelay: "0.5s" }}
                   ></span>
-                  {/* Conteúdo do botão */}
-                  <span className="relative flex items-center justify-center gap-2 font-semibold text-sm sm:text-base">
-                    Veja Nossas Metas Detalhadas
+                  <span className="relative flex items-center justify-center gap-2 font-semibold text-base sm:text-lg">
+                    Veja nossas metas detalhadas
                     <svg
                       className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover/btn:translate-x-1 transition-transform duration-300"
                       fill="none"
@@ -294,49 +285,9 @@ const Home = () => {
                   </span>
                 </Button>
               </div>
-              {/* Coluna direita - card visual da meta (2/5 do espaço) */}
-              <div className="md:col-span-2 bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 p-8 sm:p-8 flex flex-col items-center justify-center text-white relative overflow-hidden group min-h-[220px]">
-                {/* Efeito de brilho ao passar mouse */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-1000"></div>
-                {/* Partículas decorativas em posições diferentes */}
-                <div
-                  className="absolute top-4 left-4 w-2 h-2 bg-white/30 rounded-full animate-ping"
-                  style={{ animationDuration: "3s" }}
-                ></div>
-                <div
-                  className="absolute top-12 right-8 w-1.5 h-1.5 bg-white/40 rounded-full animate-ping"
-                  style={{ animationDuration: "4s", animationDelay: "1s" }}
-                ></div>
-                <div
-                  className="absolute bottom-8 left-12 w-2.5 h-2.5 bg-white/25 rounded-full animate-ping"
-                  style={{ animationDuration: "5s", animationDelay: "2s" }}
-                ></div>
-                <div
-                  className="absolute bottom-16 right-6 w-1 h-1 bg-white/35 rounded-full animate-ping"
-                  style={{ animationDuration: "3.5s", animationDelay: "1.5s" }}
-                ></div>
-                {/* Conteúdo central */}
-                <div className="relative z-10 text-center">
-                  {/* Ícone de coração com fundo */}
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-xl group-hover:scale-110 transition-transform duration-300">
-                    <Heart
-                      className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white animate-pulse"
-                      style={{ animationDuration: "1.5s" }}
-                    />
-                  </div>
-                  <p className="text-sm sm:text-base font-semibold mb-2 opacity-90 group-hover:opacity-100 transition-opacity">
-                    Nossa meta é alcançar
-                  </p>
-                  <p className="text-4xl sm:text-5xl lg:text-5xl font-extrabold mb-2 transform group-hover:scale-105 transition-transform duration-300">
-                    10.000
-                  </p>
-                  <p className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">doações este ano!</p>
-                  {/* Mensagem adicional com divisor */}
-                  <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/30">
-                    <p className="text-sm sm:text-base font-medium opacity-90">Cada doação conta!</p>
-                  </div>
-                </div>
-              </div>
+
+              {/* Coluna direita - CARD ANIMADO (2/5 do espaço) */}
+              <AnimatedGoalCard />
             </div>
           </div>
         </div>
