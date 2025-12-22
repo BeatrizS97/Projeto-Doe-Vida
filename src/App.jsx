@@ -8,22 +8,25 @@ import Stories from './pages/Stories';
 import Map from './pages/Map';
 import './App.css';
 import DonationGoalPage from './pages/DonationGoalPage';
+import { DonationProvider } from './contexts/DonationContext';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/cuidados" element={<Care />} />
-          <Route path="/historias" element={<Stories />} />
-          <Route path="/hemocentros" element={<Map />} />
-          <Route path="/doacao" element={<DonationGoalPage />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <DonationProvider>
+      <Router>
+        <div className="App">
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cuidados" element={<Care />} />
+            <Route path="/historias" element={<Stories />} />
+            <Route path="/hemocentros" element={<Map />} />
+            <Route path="/doacao" element={<DonationGoalPage />} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </DonationProvider>
   );
 }
 
