@@ -209,7 +209,7 @@ const DonationGoal = () => {
   const [daysUntilNext, setDaysUntilNext] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
   const [confetti, setConfetti] = useState([]);
-  const [glitter, setGlitter] = useState([]);
+  const [fireworks, setFireworks] = useState([]);
   const [justDonated, setJustDonated] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -218,15 +218,17 @@ const DonationGoal = () => {
   const [showGenderModal, setShowGenderModal] = useState(false);
   const [userGender, setUserGender] = useState(null);
 
+  // Percentual e doações restantes COM ANIMAÇÃO CONTROLADA
   const percentage = Math.min((donations / goal) * 100, 100);
+  const remaining = Math.max(0, goal - donations);
   const COOLDOWN_DAYS_MALE = 60;
   const COOLDOWN_DAYS_FEMALE = 90;
 
-  // Animações de contagem
-  const animatedDonations = useCountAnimation(donations, 1500);
-  const animatedGoal = useCountAnimation(goal, 2000);
-  const animatedLives = useCountAnimation(livesSaved, 1800);
-  const animatedRemaining = useCountAnimation(goal - donations, 1600);
+  // Animações de contagem - NÃO anima no mount inicial
+  const animatedDonations = useCountAnimation(donations, 1500, false);
+  const animatedGoal = useCountAnimation(goal, 2000, false);
+  const animatedLives = useCountAnimation(livesSaved, 1800, false);
+  const animatedRemaining = useCountAnimation(remaining, 1600, false);
 
   useEffect(() => {
     const savedGender = localStorage.getItem('userGender');
@@ -260,11 +262,12 @@ const DonationGoal = () => {
     }
   };
 
-  const generateConfetti = () => {
+  const generateCelebration = () => {
+    // Confetti
     const colors = ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fee2e2', '#fbbf24', '#fcd34d'];
     const shapes = ['circle', 'square', 'triangle'];
 
-    const pieces = Array.from({ length: 150 }, (_, i) => ({
+    const confettiPieces = Array.from({ length: 150 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 0.5,
@@ -275,18 +278,23 @@ const DonationGoal = () => {
       swing: Math.random() * 60 - 30,
       shape: shapes[Math.floor(Math.random() * shapes.length)]
     }));
-    setConfetti(pieces);
+    setConfetti(confettiPieces);
 
-    // Glitter adicional
-    const glitterPieces = Array.from({ length: 80 }, (_, i) => ({
+    // Fogos de artifício (explosões)
+    const fireworksArray = Array.from({ length: 8 }, (_, i) => ({
       id: i,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      delay: Math.random() * 2,
-      duration: 2 + Math.random() * 1,
-      size: 3 + Math.random() * 4,
+      left: 20 + Math.random() * 60,
+      bottom: 20 + Math.random() * 40,
+      delay: Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      particles: Array.from({ length: 30 }, (_, j) => ({
+        id: j,
+        angle: (j * 360) / 30,
+        distance: 40 + Math.random() * 40,
+        size: 3 + Math.random() * 4
+      }))
     }));
-    setGlitter(glitterPieces);
+    setFireworks(fireworksArray);
   };
 
   const showToastNotification = (message) => {
@@ -348,34 +356,31 @@ const DonationGoal = () => {
 
     if (newTotal === goal) {
       setShowCelebration(true);
-      generateConfetti();
-      showToastNotification(`🎉 META ALCANÇADA! ${livesSaved + 4} vidas salvas! 🎉`);
+      generateCelebration();
+      showToastNotification(`🎉 META ALCANÇADA! Você completou ${goal} ${goal === 1 ? 'doação' : 'doações'}! 🎉`);
       setTimeout(() => {
         setShowCelebration(false);
         setConfetti([]);
-        setGlitter([]);
+        setFireworks([]);
       }, 12000);
     }
   };
 
   const resetGoal = () => {
     if (window.confirm('Resetar todas as doações? Esta ação não pode ser desfeita.')) {
-      // Limpar estados locais
       setDonations(0);
       setLastDonation(null);
       setCanDonate(true);
       setDaysUntilNext(0);
       setShowCelebration(false);
       setConfetti([]);
-      setGlitter([]);
+      setFireworks([]);
       setUserGender(null);
 
-      // Limpar localStorage
       localStorage.setItem('totalDonations', '0');
       localStorage.removeItem('lastDonationDate');
       localStorage.removeItem('userGender');
 
-      // Reinicializar dados mensais
       const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const data = months.map((month, i) => ({
         month,
@@ -395,14 +400,12 @@ const DonationGoal = () => {
     <div className="relative">
       <div className="relative container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
 
-        {/* Modal de Gênero */}
         <GenderModal
           isOpen={showGenderModal}
           onClose={() => setShowGenderModal(false)}
           onConfirm={handleGenderConfirm}
         />
 
-        {/* Toast Notification */}
         {showToast && (
           <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] animate-fade-in">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[280px] border-2 border-green-400">
@@ -422,10 +425,10 @@ const DonationGoal = () => {
           </div>
         )}
 
-        {/* Confetti e Glitter MELHORADOS */}
+        {/* Confetti e Fogos de Artifício */}
         {showCelebration && (
           <>
-            {/* Confetti */}
+            {/* Confetti caindo */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
               {confetti.map((piece) => (
                 <div
@@ -457,23 +460,35 @@ const DonationGoal = () => {
               ))}
             </div>
 
-            {/* Glitter */}
+            {/* Fogos de artifício */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
-              {glitter.map((piece) => (
+              {fireworks.map((firework) => (
                 <div
-                  key={`glitter-${piece.id}`}
-                  className="absolute rounded-full animate-pulse"
+                  key={`firework-${firework.id}`}
+                  className="absolute"
                   style={{
-                    left: `${piece.left}%`,
-                    top: `${piece.top}%`,
-                    width: `${piece.size}px`,
-                    height: `${piece.size}px`,
-                    background: 'radial-gradient(circle, #ffd700 0%, #ffed4e 50%, transparent 70%)',
-                    boxShadow: '0 0 10px #ffd700, 0 0 20px #ffed4e',
-                    animation: `glitter ${piece.duration}s ease-in-out infinite`,
-                    animationDelay: `${piece.delay}s`,
+                    left: `${firework.left}%`,
+                    bottom: `${firework.bottom}%`,
+                    animationDelay: `${firework.delay}s`,
                   }}
-                />
+                >
+                  {firework.particles.map((particle) => (
+                    <div
+                      key={`particle-${firework.id}-${particle.id}`}
+                      className="absolute rounded-full"
+                      style={{
+                        width: `${particle.size}px`,
+                        height: `${particle.size}px`,
+                        backgroundColor: firework.color,
+                        boxShadow: `0 0 ${particle.size * 2}px ${firework.color}`,
+                        animation: `firework-particle 1.5s ease-out forwards`,
+                        animationDelay: `${firework.delay}s`,
+                        '--angle': `${particle.angle}deg`,
+                        '--distance': `${particle.distance}px`,
+                      }}
+                    />
+                  ))}
+                </div>
               ))}
             </div>
           </>
@@ -501,49 +516,51 @@ const DonationGoal = () => {
             </div>
           </div>
 
+          {/*}
           {TEST_MODE && (
             <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold border-2 border-blue-300 mb-3 shadow-sm">
               <Info className="w-3.5 h-3.5" />
               Modo Teste Ativado
             </div>
           )}
+          */}
 
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-3">
-            Meta de Doações {targetYear}
+            Minha Meta de Doações {targetYear}
           </h1>
           <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-            Nossa meta coletiva é alcançar <strong className="text-rose-700 tabular-nums">{animatedGoal.toLocaleString()}</strong> doações e salvar <strong className="text-rose-700 tabular-nums">{(animatedGoal * 4).toLocaleString()} vidas</strong> em {targetYear}
+            Sua meta pessoal é realizar <strong className="text-rose-700 tabular-nums">{animatedGoal}</strong> {animatedGoal === 1 ? 'doação' : 'doações'} e salvar até <strong className="text-rose-700 tabular-nums">{animatedGoal * 4}</strong> vidas em {targetYear}
           </p>
         </div>
 
-        {/* Card de informação COLETIVA - MENSAGEM ATUALIZADA */}
+        {/* Card de informação INDIVIDUAL */}
         <div className="max-w-4xl mx-auto mb-6 animate-slide-up">
-          <div className="bg-gradient-to-r from-amber-100/80 to-orange-100/80 backdrop-blur-sm rounded-xl p-4 border-l-4 border-amber-500 shadow-md">
+          <div className="bg-gradient-to-r from-rose-100/80 to-pink-100/80 backdrop-blur-sm rounded-xl p-4 border-l-4 border-rose-500 shadow-md">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
-                <Users className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                <Heart className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 text-sm mb-1">
-                  Impacto Coletivo da Comunidade
+                  Seu Acompanhamento Pessoal
                 </h3>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Este contador representa o esforço conjunto de TODOS os doadores que utilizam nossa plataforma. Cada registro aqui contribui para nossa meta coletiva de salvar vidas através da doação de sangue!
+                  Este é o seu contador individual! Registre suas doações e acompanhe sua jornada pessoal de salvar vidas através da doação de sangue.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Contador e Progress COM ANIMAÇÃO */}
+        {/* Contador e Progress COM ANIMAÇÃO CONTROLADA */}
         <div className="max-w-4xl mx-auto mb-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="flex justify-between items-end mb-4">
             <div>
-              <p className="text-gray-600 text-sm font-semibold mb-1">Doações Realizadas</p>
+              <p className="text-gray-600 text-sm font-semibold mb-1">Suas Doações</p>
               <p className="text-4xl font-bold text-rose-700 tabular-nums">{animatedDonations}</p>
             </div>
             <div className="text-right">
-              <p className="text-gray-600 text-sm font-semibold mb-1">Objetivo</p>
+              <p className="text-gray-600 text-sm font-semibold mb-1">Sua Meta</p>
               <p className="text-3xl font-bold text-gray-400 tabular-nums">{animatedGoal}</p>
             </div>
           </div>
@@ -563,14 +580,14 @@ const DonationGoal = () => {
           </div>
         </div>
 
-        {/* Cards de Estatísticas COM ANIMAÇÃO */}
+        {/* Cards de Estatísticas COM ANIMAÇÃO CONTROLADA */}
         <div className="max-w-4xl mx-auto grid grid-cols-2 gap-4 mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <div className="bg-gradient-to-br from-rose-100/80 to-red-100/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all border-2 border-rose-200/50 group cursor-default">
             <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-2 shadow-md group-hover:scale-110 transition-transform">
               <Heart className="w-6 h-6 text-white" />
             </div>
             <p className="text-2xl font-bold text-gray-900 tabular-nums">{animatedLives}</p>
-            <p className="text-xs text-gray-700 font-semibold mt-1">Vidas Salvas</p>
+            <p className="text-xs text-gray-700 font-semibold mt-1">Vidas Salvas por Você</p>
           </div>
 
           <div className="bg-gradient-to-br from-gray-100/80 to-gray-200/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all border-2 border-gray-300/50 group cursor-default">
@@ -578,11 +595,11 @@ const DonationGoal = () => {
               <Users className="w-6 h-6 text-white" />
             </div>
             <p className="text-2xl font-bold text-gray-900 tabular-nums">{animatedRemaining}</p>
-            <p className="text-xs text-gray-700 font-semibold mt-1">Restantes</p>
+            <p className="text-xs text-gray-700 font-semibold mt-1">{animatedRemaining === 1 ? 'Falta' : 'Faltam'}</p>
           </div>
         </div>
 
-        {/* Gráfico Mensal MELHORADO */}
+        {/* Gráfico Mensal */}
         {donations > 0 && (
           <div data-chart-container className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <MonthlyChart
@@ -609,7 +626,7 @@ const DonationGoal = () => {
 
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 mb-3 shadow-sm border border-rose-200/50">
                   <p className="text-gray-600 text-xs mb-1.5 font-semibold">
-                    Última doação registrada
+                    Sua última doação registrada
                   </p>
                   <p className="text-rose-700 font-bold text-sm flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
@@ -623,7 +640,7 @@ const DonationGoal = () => {
 
                 <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 mb-3 shadow-sm border border-rose-200/50 text-center">
                   <p className="text-gray-700 text-sm mb-2 font-semibold">
-                    Próxima doação disponível em
+                    Sua próxima doação disponível em
                   </p>
                   <p className="text-rose-700 font-bold text-3xl tabular-nums">
                     {daysUntilNext}
@@ -643,10 +660,10 @@ const DonationGoal = () => {
             </div>
           </div>
         )}
+
         {!showCelebration ? (
           <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.5s' }}>
-            {/* Adicionado mb-6 para afastar mais dos cards abaixo */}
-            <div className="flex justify-center mb-6"> {/* Container para centralizar o botão */}
+            <div className="flex justify-center mb-6">
               <button
                 onClick={handleDonateClick}
                 disabled={!canDonate || donations >= goal}
@@ -683,9 +700,7 @@ const DonationGoal = () => {
             )}
           </div>
         ) : (
-
           <div className="max-w-4xl mx-auto text-center py-12 bg-gradient-to-br from-amber-100/90 to-yellow-200/90 backdrop-blur-sm rounded-3xl shadow-2xl border-4 border-amber-400 mb-6 animate-scale-in relative overflow-hidden">
-            {/* Efeito de brilho animado */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
 
             <div className="relative z-10">
@@ -694,33 +709,36 @@ const DonationGoal = () => {
               </div>
 
               <h3 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-red-600 mb-3 animate-pulse">
-                🎉 META ALCANÇADA! 🎉
+                🎉 PARABÉNS! 🎉
               </h3>
 
               <div className="inline-block bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-4 mb-4 border-2 border-amber-400 shadow-xl">
-                <p className="text-3xl font-extrabold text-gray-900 mb-1 tabular-nums">
+                <p className="text-lg font-bold text-gray-800 mb-1">
+                  Você alcançou sua meta de {goal} {goal === 1 ? 'doação' : 'doações'}!
+                </p>
+                <p className="text-3xl font-extrabold text-rose-700 mb-1 tabular-nums">
                   {livesSaved} VIDAS
                 </p>
-                <p className="text-lg font-bold text-rose-600">
-                  foram salvas por vocês!
+                <p className="text-lg font-bold text-gray-800">
+                  podem ser salvas graças a você!
                 </p>
               </div>
 
               <div className="flex items-center justify-center gap-3 text-amber-800 text-lg font-bold">
                 <Heart className="w-6 h-6 text-rose-600 fill-current animate-pulse" />
-                <span>Obrigado a todos os doadores!</span>
+                <span>Você é um herói!</span>
                 <Heart className="w-6 h-6 text-rose-600 fill-current animate-pulse" />
               </div>
 
               <p className="mt-6 text-sm text-gray-700 font-medium">
-                Juntos, vocês transformaram {goal} doações em esperança e vida! ✨
+                Sua dedicação à doação de sangue faz toda a diferença! ✨
               </p>
             </div>
           </div>
         )}
 
-        {/*Botão Reset -- Removido para evitar uso indevido
-         {(donations > 0 || TEST_MODE) && (
+        {/* Botão Reset - ATIVO PARA TESTES 
+        {(donations > 0 || TEST_MODE) && (
           <div className="max-w-4xl mx-auto">
             <button
               onClick={resetGoal}
@@ -730,42 +748,40 @@ const DonationGoal = () => {
               {TEST_MODE ? 'Resetar Contador (Teste)' : 'Resetar Contador'}
             </button>
           </div>
-        )} */}
-        {/* Cards Informativos TOTALMENTE REDESENHADOS - TAMANHO REDUZIDO */}
-        <div className="max-w-5xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.6s' }}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> {/* Reduzido gap de 8 para 6 */}
+        )}
+        */}
 
-            {/* Card 1: Benefícios - Design Elevado - TAMANHO REDUZIDO */}
+        {/* Cards Informativos */}
+        <div className="max-w-5xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.6s' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* Card 1: Benefícios */}
             <div className="group relative">
-              {/* Blur de fundo reduzido */}
-              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-rose-100 overflow-hidden"> {/* Reduzido padding e border-radius */}
-                {/* Efeitos decorativos reduzidos */}
+              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-rose-100 overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-rose-100 to-transparent rounded-full blur-2xl opacity-50"></div>
                 <div className="absolute -bottom-6 -left-6 w-18 h-18 bg-gradient-to-tr from-red-100 to-transparent rounded-full blur-xl opacity-40"></div>
 
                 <div className="relative z-10">
-                  {/* Header do Card - TAMANHO AJUSTADO */}
                   <div className="flex items-start justify-between mb-6">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">Benefícios de Doar</h3> {/* Reduzido de 2xl para xl */}
-                      <p className="text-sm text-rose-600 font-semibold">Transforme vidas através da doação</p> {/* Reduzido para xs */}
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Benefícios de Doar</h3>
+                      <p className="text-sm text-rose-600 font-semibold">Transforme vidas através da doação</p>
                     </div>
-                    <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"> {/* Reduzido tamanho e border-radius */}
-                      <Heart className="w-6 h-6 text-white fill-current" /> {/* Reduzido ícone */}
+                    <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                      <Heart className="w-6 h-6 text-white fill-current" />
                     </div>
                   </div>
 
-                  {/* Lista de Benefícios */}
-                  <div className="space-y-3"> {/* Reduzido gap de 4 para 3 */}
+                  <div className="space-y-3">
                     {[
                       { text: 'Salva até 4 vidas por doação', iconType: 'heart', color: 'rose' },
                       { text: 'Renova o sangue naturalmente', iconType: 'refresh', color: 'red' },
                       { text: 'Check-up gratuito de saúde', iconType: 'health', color: 'rose' }
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-3 group/item"> {/* Reduzido gap de 4 para 3 */}
+                      <div key={idx} className="flex items-center gap-3 group/item">
                         <div className="relative flex-shrink-0">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}> {/* Reduzido tamanho e border-radius */}
-                            <div className="w-5 h-5"> {/* Reduzido tamanho do ícone */}
+                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}>
+                            <div className="w-5 h-5">
                               {item.iconType === 'heart' && (
                                 <svg viewBox="0 0 24 24" className="w-full h-full">
                                   <defs>
@@ -801,10 +817,9 @@ const DonationGoal = () => {
                               )}
                             </div>
                           </div>
-                          {/* Ponto decorativo */}
-                          <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity"></div> {/* Reduzido ponto */}
+                          <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
                         </div>
-                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p> {/* Reduzido texto para sm */}
+                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p>
                       </div>
                     ))}
                   </div>
@@ -812,37 +827,33 @@ const DonationGoal = () => {
               </div>
             </div>
 
-            {/* Card 2: Dicas - Design Elevado - TAMANHO REDUZIDO */}
+            {/* Card 2: Dicas */}
             <div className="group relative">
-              {/* Blur de fundo reduzido */}
-              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-red-100 overflow-hidden"> {/* Reduzido padding e border-radius */}
-                {/* Efeitos decorativos reduzidos */}
+              <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-red-100 overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-100 to-transparent rounded-full blur-2xl opacity-50"></div>
                 <div className="absolute -bottom-6 -left-6 w-18 h-18 bg-gradient-to-tr from-rose-100 to-transparent rounded-full blur-xl opacity-40"></div>
 
                 <div className="relative z-10">
-                  {/* Header do Card - TAMANHO AJUSTADO */}
                   <div className="flex items-start justify-between mb-6">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">Dicas Importantes</h3> {/* Reduzido de 2xl para xl */}
-                      <p className="text-sm text-red-600 font-semibold">Cuide-se antes e depois</p> {/* Reduzido para xs */}
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Dicas Importantes</h3>
+                      <p className="text-sm text-red-600 font-semibold">Cuide-se antes e depois</p>
                     </div>
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300"> {/* Reduzido tamanho e border-radius */}
-                      <Info className="w-6 h-6 text-white" /> {/* Reduzido ícone */}
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                      <Info className="w-6 h-6 text-white" />
                     </div>
                   </div>
 
-                  {/* Lista de Dicas */}
-                  <div className="space-y-3"> {/* Reduzido gap de 4 para 3 */}
+                  <div className="space-y-3">
                     {[
                       { text: 'Homens: intervalo de 60 dias', iconType: 'clock', color: 'red' },
                       { text: 'Mulheres: intervalo de 90 dias', iconType: 'calendar', color: 'rose' },
                       { text: 'Esteja alimentado e hidratado', iconType: 'water', color: 'blue' }
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-3 group/item"> {/* Reduzido gap de 4 para 3 */}
+                      <div key={idx} className="flex items-center gap-3 group/item">
                         <div className="relative flex-shrink-0">
-                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'blue' ? 'from-blue-50 to-cyan-50' : item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}> {/* Reduzido tamanho e border-radius */}
-                            <div className="w-5 h-5"> {/* Reduzido tamanho do ícone */}
+                          <div className={`w-10 h-10 bg-gradient-to-br ${item.color === 'blue' ? 'from-blue-50 to-cyan-50' : item.color === 'rose' ? 'from-rose-50 to-red-50' : 'from-red-50 to-rose-50'} rounded-lg flex items-center justify-center group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300 border border-${item.color}-100`}>
+                            <div className="w-5 h-5">
                               {item.iconType === 'clock' && (
                                 <svg viewBox="0 0 24 24" className="w-full h-full">
                                   <defs>
@@ -886,10 +897,9 @@ const DonationGoal = () => {
                               )}
                             </div>
                           </div>
-                          {/* Ponto decorativo */}
-                          <div className={`absolute -bottom-1 -right-1 w-2.5 h-2.5 ${item.color === 'blue' ? 'bg-blue-500' : 'bg-red-500'} rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity`}></div> {/* Reduzido ponto */}
+                          <div className={`absolute -bottom-1 -right-1 w-2.5 h-2.5 ${item.color === 'blue' ? 'bg-blue-500' : 'bg-red-500'} rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity`}></div>
                         </div>
-                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p> {/* Reduzido texto para sm */}
+                        <p className="text-sm text-gray-700 font-medium flex-1 group-hover/item:text-gray-900 transition-colors">{item.text}</p>
                       </div>
                     ))}
                   </div>
@@ -900,40 +910,31 @@ const DonationGoal = () => {
           </div>
         </div>
 
-        {/* Seção Junte-se à Nossa Causa - Versão Simplificada e Centralizada */}
+        {/* Seção Junte-se à Nossa Causa */}
         <div className="max-w-4xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.7s' }}>
           <div className="relative group">
-            {/* Removido o blur de fundo vermelho */}
-
             <div className="relative bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-100 overflow-hidden">
-              {/* Removidos os efeitos decorativos vermelhos */}
-
               <div className="relative z-10 flex flex-col items-center text-center space-y-5">
-
-                {/* Badge superior - ESTILO CONSISTENTE COM O DESIGN ORIGINAL */}
                 <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-rose-200 shadow-sm">
                   <div className="w-5 h-5 bg-gradient-to-br from-rose-500 to-red-600 rounded-lg flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-sm font-bold text-rose-700">Faça Parte da Mudança</span>
+                  <span className="text-sm font-bold text-rose-700">Inspire Outras Pessoas</span>
                 </div>
 
-                {/* Título */}
                 <div>
                   <h3 className="text-2xl md:text-2xl font-bold text-gray-900 mb-1">
-                    Junte-se à Nossa Causa
+                    Compartilhe Sua Jornada
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed max-w-xl">
-                    Compartilhe sua jornada e inspire outras pessoas a doar sangue. Juntos, podemos salvar milhares de vidas!
+                    Conte sua história de doação e motive outras pessoas a salvarem vidas! Juntos, fazemos a diferença.
                   </p>
                 </div>
 
-                {/* Tag */}
                 <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200 shadow-sm">
                   <Heart className="w-3.5 h-3.5 text-pink-600" />
                   <span className="text-sm font-semibold text-gray-700">#DoeSangueDoeVida</span>
                 </div>
-
               </div>
             </div>
           </div>
@@ -957,14 +958,20 @@ const DonationGoal = () => {
           }
         }
 
-        @keyframes glitter {
-          0%, 100% {
-            opacity: 0;
-            transform: scale(0.5);
+        @keyframes firework-particle {
+          0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
           }
           50% {
             opacity: 1;
-            transform: scale(1.5);
+          }
+          100% {
+            transform: translate(
+              calc(cos(var(--angle)) * var(--distance)),
+              calc(sin(var(--angle)) * var(--distance) * -1)
+            ) scale(0);
+            opacity: 0;
           }
         }
 

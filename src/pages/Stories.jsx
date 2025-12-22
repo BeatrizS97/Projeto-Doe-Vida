@@ -71,69 +71,74 @@ const Stories = () => {
           className="max-w-3xl mx-auto space-y-3 lg:space-y-4 mb-6 lg:mb-8 opacity-0"
         >
           {testimonials.map((person, idx) => (
-            <div 
-              key={idx} 
-              className="group bg-gradient-to-br from-white to-rose-50/40 rounded-xl shadow-sm p-4 border border-rose-100/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 animate-slide-up"
-              // Animação escalonada para dar sensação de "fluxo" ao carregar os depoimentos
+            <div
+              key={idx}
+              className="group bg-gradient-to-br from-white to-rose-50/40 rounded-xl shadow-sm p-4 sm:p-5 border border-rose-100/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 animate-slide-up"
               style={{ animationDelay: `${idx * 0.1}s` }}
             >
               <div className="flex flex-col sm:flex-row items-start gap-4">
-                {/* Avatar estilizado com inicial do nome e gota animada como detalhe visual */}
+                {/* Avatar - TAMANHO FIXO MOBILE */}
                 <div className="relative flex-shrink-0">
-                  <div className="w-12 h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-rose-500 to-red-600 rounded-full flex items-center justify-center text-white text-lg lg:text-xl font-bold shadow-sm group-hover:scale-110 transition-all">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-rose-500 to-red-600 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-sm group-hover:scale-110 transition-all">
                     {person.name.charAt(0)}
                   </div>
-                  {/* Gota de sangue estilizada como partícula animada */}
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 animate-bounce" style={{ animationDuration: '2s', animationDelay: `${idx * 0.3}s` }}>
+
+                  {/* Gota animada */}
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 animate-bounce" style={{ animationDuration: '2s', animationDelay: `${idx * 0.3}s` }}>
                     <svg viewBox="0 0 24 24" className="w-full h-full drop-shadow-sm">
-                      <path d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z" fill="#f43f5e"/>
-                      <ellipse cx="10" cy="11" rx="2" ry="2.5" fill="white" opacity="0.4"/>
+                      <path d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z" fill="#f43f5e" />
+                      <ellipse cx="10" cy="11" rx="2" ry="2.5" fill="white" opacity="0.4" />
                     </svg>
                   </div>
-                  {/* Ponto pulsante para reforçar dinamismo */}
+
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-rose-400 rounded-full animate-ping"></div>
                 </div>
 
-                {/* Conteúdo textual do depoimento */}
-                <div className="flex-1">
-                  {/* Cabeçalho do depoimento com nome, idade, ano e condição médica */}
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                    <div>
-                      <h3 className="text-lg lg:text-xl font-bold text-gray-800 group-hover:text-rose-600 transition-colors">
+                {/* Conteúdo textual */}
+                <div className="flex-1 w-full sm:w-auto">
+                  {/* Cabeçalho - LAYOUT MELHORADO */}
+                  <div className="flex flex-col gap-2 mb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-800 group-hover:text-rose-600 transition-colors">
                         {person.name}
                       </h3>
-                      {/* Badges informativas com ícones SVG embutidos para melhor controle visual */}
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <span className="inline-flex items-center gap-1 text-xs lg:text-sm text-gray-600 bg-rose-50 px-2 py-1 rounded-full">
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                          </svg>
-                          {person.age} anos
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-xs lg:text-sm text-gray-600 bg-red-50 px-2 py-1 rounded-full">
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
-                          </svg>
-                          {person.year}
-                        </span>
+
+                      {/* Badge de condição - MELHOR POSICIONAMENTO */}
+                      <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-rose-600 to-red-600 text-white px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {person.condition}
                       </div>
                     </div>
-                    {/* Destaque visual para condição clínica (ex: "Câncer", "Acidente") */}
-                    <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-rose-600 to-red-600 text-white px-2.5 py-1 rounded-full text-xs lg:text-sm font-semibold">
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
-                      {person.condition}
+
+                    {/* Badges informativas - WRAP OTIMIZADO */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-600 bg-rose-50 px-2.5 py-1 rounded-full">
+                        <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                        </svg>
+                        {person.age} anos
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-600 bg-red-50 px-2.5 py-1 rounded-full">
+                        <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+                        </svg>
+                        {person.year}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Citação com aspas decorativas e formatação estilizada para legibilidade */}
-                  <div className="relative">
-                    <div className="absolute -left-2 -top-2 text-3xl text-rose-200/40 font-serif leading-none">"</div>
-                    <p className="text-xs sm:text-sm lg:text-[13px] leading-[1.45] lg:leading-[1.5] border-l-4 border-rose-500 pl-4 pr-3 lg:pl-5 lg:pr-4 bg-gradient-to-r from-rose-50 to-transparent py-2.5 rounded-r-lg text-gray-800 italic relative">
+                  {/* Citação - PADDING AJUSTADO PARA MOBILE */}
+                  <div className="relative mt-2">
+                    <div className="absolute -left-1 sm:-left-2 -top-1 sm:-top-2 text-2xl sm:text-3xl text-rose-200/40 font-serif leading-none">"</div>
+
+                    <p className="text-sm sm:text-[15px] leading-relaxed border-l-3 sm:border-l-4 border-rose-500 pl-4 sm:pl-5 pr-3 sm:pr-4 bg-gradient-to-r from-rose-50 to-transparent py-2.5 sm:py-3 rounded-r-lg text-gray-800 italic relative">
                       {person.story}
                     </p>
-                    <div className="absolute -right-2 -bottom-2 text-3xl text-rose-200/40 font-serif leading-none rotate-180">"</div>
+
+                    <div className="absolute -right-1 sm:-right-2 -bottom-1 sm:-bottom-2 text-2xl sm:text-3xl text-rose-200/40 font-serif leading-none rotate-180">"</div>
                   </div>
                 </div>
               </div>
@@ -170,8 +175,8 @@ const Stories = () => {
               <div className="relative">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md">
                   <svg className="w-6 h-6 text-white animate-pulse" viewBox="0 0 24 24" style={{ animationDuration: '2s' }}>
-                    <path fill="currentColor" d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z"/>
-                    <ellipse cx="10.5" cy="11" rx="2" ry="3" fill="white" opacity="0.4"/>
+                    <path fill="currentColor" d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z" />
+                    <ellipse cx="10.5" cy="11" rx="2" ry="3" fill="white" opacity="0.4" />
                   </svg>
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-400 rounded-full animate-ping"></div>
@@ -229,7 +234,7 @@ const Stories = () => {
                       {/* Ícone de gota como representação visual do componente */}
                       <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 group-hover/component:scale-110 transition-transform">
                         <svg className="w-4.5 h-4.5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z"/>
+                          <path d="M12 2C12 2 7 8 7 13C7 16.31 9.69 19 13 19C16.31 19 19 16.31 19 13C19 8 12 2 12 2Z" />
                         </svg>
                       </div>
                       <div className="flex-1">
@@ -260,7 +265,7 @@ const Stories = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-rose-600 to-red-700 rounded-xl shadow-sm animate-pulse" style={{ animationDuration: '3s' }}></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg className="w-6 h-6 lg:w-7 lg:h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-rose-400 rounded-full animate-ping"></div>
@@ -269,7 +274,7 @@ const Stories = () => {
                 Estados que Mais Precisam de Doadores
               </h2>
             </div>
-            
+
             {/* Lista de estados com barra de progresso visual para % de doadores */}
             <div className="space-y-3">
               {estadosMenosDoacao.map((estado, idx) => (
@@ -286,7 +291,7 @@ const Stories = () => {
                         </span>
                         <div className="flex items-center gap-1 text-xs text-gray-600 mt-0.5">
                           <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                           </svg>
                           Pop: {estado.populacao}
                         </div>
@@ -302,7 +307,7 @@ const Stories = () => {
                   {/* Barra de progresso customizada com gradiente e animação interna */}
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-gray-200 rounded-full h-2.5 relative overflow-hidden">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-rose-500 via-red-600 to-rose-500 h-2.5 rounded-full transition-all duration-1000 relative"
                         // Escala ajustada para tornar a barra visualmente proporcional (20x o valor percentual)
                         style={{ width: `${estado.porcentagem * 20}%` }}
@@ -314,7 +319,7 @@ const Stories = () => {
                     {/* Número absoluto de doadores */}
                     <span className="text-xs lg:text-sm text-gray-700 font-semibold min-w-[80px] flex items-center gap-1">
                       <svg className="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                       </svg>
                       {estado.doadores}
                     </span>
@@ -322,7 +327,7 @@ const Stories = () => {
                 </div>
               ))}
             </div>
-            
+
             {/* Mensagem de referência com meta da OMS para contexto educativo */}
             <div className="mt-5 pt-4 border-t border-rose-200">
               <div className="bg-gradient-to-r from-rose-50 to-red-50 rounded-lg p-3 text-center">
@@ -348,35 +353,35 @@ const Stories = () => {
             {/* Partículas decorativas para reforçar dinamismo */}
             <div className="absolute top-3 left-4 w-1.5 h-1.5 bg-white/30 rounded-full animate-ping"></div>
             <div className="absolute bottom-4 right-5 w-1 h-1 bg-white/40 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
-            
+
             <div className="relative z-10">
               {/* Ícone de coração com pulsação sutil */}
               <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full mb-3 group-hover:scale-110 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white animate-pulse" viewBox="0 0 24 24" fill="currentColor" style={{ animationDuration: '1.5s' }}>
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
               </div>
-              
+
               <h3 className="text-xl font-bold mb-0.5">
                 Seja você também um doador!
               </h3>
               <p className="text-[15px] lg:text-lg mb-3 opacity-95">
                 Sua história pode inspirar outras pessoas a salvar vidas
               </p>
-              
+
               {/* Botão com navegação direta para /hemocentros + scroll suave ao topo */}
-              <button 
-  onClick={() => {
-    navigate('/hemocentros');
-    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
-  }}
-  className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-sm font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
->
+              <button
+                onClick={() => {
+                  navigate('/hemocentros');
+                  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+                }}
+                className="bg-white text-rose-600 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-base sm:text-sm font-bold hover:bg-rose-50 transition-all shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto"
+              >
                 {/* Efeito de brilho animado dentro do botão */}
                 <span className="flex items-center justify-center gap-2">
                   Encontrar Hemocentro
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
               </button>

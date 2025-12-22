@@ -298,7 +298,7 @@ const Home = () => {
         <div className="max-w-4xl mx-auto">
           {/* Cabeçalho da seção - REMOVIDO O SEPARADOR COM LINHAS E CORAÇÃO */}
           {/* Agora temos apenas o título e subtítulo, sem decoração extra */}
-          <div className="text-center mb-6 sm:mb-8 animate-fade-in">
+          <div className="text-center mb-6 sm:mb-6 animate-fade-in">
             <h2 className="text-2xl xs:text-3xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Nossa Missão</h2>
             <p className="text-sm xs:text-base sm:text-lg text-gray-600 font-normal leading-relaxed italic px-2">
               Transformando vidas através da solidariedade

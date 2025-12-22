@@ -1,5 +1,5 @@
 // src/contexts/DonationContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 const DonationContext = createContext();
 
@@ -8,20 +8,24 @@ export const DonationProvider = ({ children }) => {
   const [lastDonation, setLastDonation] = useState(null);
   const [monthlyData, setMonthlyData] = useState([]);
   
-  const TEST_MODE = false;
-  const goal = TEST_MODE ? 1 : 500;
-  const livesSaved = donations * 4;
+  // CONSTANTES FIXAS - não recalcula em cada render
+  const TEST_MODE = false; // Alterar para true para ativar modo de teste
+  const goal = TEST_MODE ? 1 : 2;
   const currentYear = new Date().getFullYear();
   const targetYear = currentYear + 1;
 
-  // Carregar dados do localStorage ao inicializar
+  // Calcula vidas salvas com useMemo para evitar recálculo desnecessário
+  const livesSaved = useMemo(() => donations * 4, [donations]);
+
+  // Carregar dados do localStorage ao inicializar - APENAS UMA VEZ
   useEffect(() => {
     const savedDonations = localStorage.getItem('totalDonations');
     const savedLastDate = localStorage.getItem('lastDonationDate');
     const savedMonthly = localStorage.getItem('monthlyDonations');
     
     if (savedDonations) {
-      setDonations(parseInt(savedDonations));
+      const parsedDonations = parseInt(savedDonations, 10);
+      setDonations(parsedDonations);
     }
     
     if (savedLastDate) {
@@ -29,16 +33,21 @@ export const DonationProvider = ({ children }) => {
     }
 
     if (savedMonthly) {
-      const parsed = JSON.parse(savedMonthly);
-      if (parsed.length === 12) {
-        setMonthlyData(parsed);
-      } else {
+      try {
+        const parsed = JSON.parse(savedMonthly);
+        if (parsed.length === 12) {
+          setMonthlyData(parsed);
+        } else {
+          initializeMonthlyData();
+        }
+      } catch (e) {
+        console.error('Erro ao carregar dados mensais:', e);
         initializeMonthlyData();
       }
     } else {
       initializeMonthlyData();
     }
-  }, []);
+  }, []); // Array vazio = executa APENAS no mount
 
   const initializeMonthlyData = () => {
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -79,7 +88,8 @@ export const DonationProvider = ({ children }) => {
     initializeMonthlyData();
   };
 
-  const value = {
+  // Usa useMemo para criar o objeto value APENAS quando as dependências mudarem
+  const value = useMemo(() => ({
     donations,
     setDonations: updateDonations,
     lastDonation,
@@ -91,7 +101,7 @@ export const DonationProvider = ({ children }) => {
     livesSaved,
     targetYear,
     TEST_MODE
-  };
+  }), [donations, lastDonation, monthlyData, livesSaved]); // Dependências específicas
 
   return (
     <DonationContext.Provider value={value}>
