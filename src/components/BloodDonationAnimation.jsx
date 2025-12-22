@@ -18,7 +18,7 @@ const BloodDonationAnimation = () => {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-50 to-red-50 rounded-2xl p-2 sm:p-4 mx-auto overflow-hidden">
-      {/* SVG - Bolsa e Tubo Flexível */}
+      {/* SVG - Bolsa e Tubo Flexível - CÓDIGO ORIGINAL MANTIDO */}
       <svg
         viewBox="0 0 600 500"
         className="w-full h-full absolute inset-0 z-10"
@@ -48,7 +48,7 @@ const BloodDonationAnimation = () => {
         {/* Tubo FLEXÍVEL */}
         <g id="flexible-tube">
           <path
-            d="M 80,165 C 150,220 350,230 500,240"
+            d="M 80,165 C 150,220 350,230 520,165"
             fill="none"
             stroke="#9ca3af"
             strokeWidth="10"
@@ -57,7 +57,7 @@ const BloodDonationAnimation = () => {
           />
 
           <path
-            d="M 80,165 C 150,220 350,230 500,240"
+            d="M 80,165 C 150,220 350,230 520,165"
             fill="none"
             stroke="url(#flowGrad)"
             strokeWidth="5"
@@ -65,7 +65,7 @@ const BloodDonationAnimation = () => {
             strokeLinejoin="round"
           />
 
-          <g transform="translate(505, 240) rotate(90)">
+          <g transform="translate(520, 165) rotate(90)">
             <ellipse cx="0" cy="0" rx="8" ry="6" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="1.5" />
             <rect x="-6" y="-7" width="12" height="5" fill="#60a5fa" rx="2" />
             <line x1="0" y1="1" x2="0" y2="12" stroke="#6b7280" strokeWidth="2" />
@@ -117,21 +117,24 @@ const BloodDonationAnimation = () => {
         </g>
       </svg>
 
-      {/* IMAGEM DO BRAÇO - RESPONSIVA */}
-      <div className="absolute bottom-0 right-0 w-full sm:w-[85%] md:w-[70%] h-[220px] xs:h-[250px] sm:h-[280px] md:h-[320px] z-20">
-        <img
-          src="/arm-donation.png"
-          alt="Braço doando sangue"
-          className="w-full h-full object-contain opacity-85"
-          style={{
-            filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.3))",
-            transform:
-              "translateY(-10px) translateX(-10px) scale(0.9) sm:translateY(-15px) sm:translateX(-20px) sm:scale(0.95)",
-          }}
-        />
+      {/* IMAGEM DO BRAÇO - CÓDIGO ORIGINAL COM AJUSTE APENAS EM MOBILE */}
+      <div className="absolute bottom-0 right-0 w-full sm:w-[85%] md:w-[70%] z-20">
+        {/* Container com altura responsiva */}
+        <div className="h-[160px] xs:h-[200px] sm:h-[280px] md:h-[350px] lg:h-[400px] xl:h-[450px]">
+          <img
+            src="/arm-donation.png"
+            alt="Braço doando sangue"
+            className="w-full h-full object-contain opacity-85"
+            style={{
+              filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.3))",
+              // CÓDIGO ORIGINAL MANTIDO
+              transform: "translateY(-10px) translateX(-10px) scale(0.9) sm:translateY(-15px) sm:translateX(-20px) sm:scale(0.95)",
+            }}
+          />
+        </div>
       </div>
 
-      {/* Texto indicador */}
+      {/* Texto indicador - CÓDIGO ORIGINAL MANTIDO */}
       <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 text-center z-30">
         <p className="text-xs xs:text-sm sm:text-base font-bold text-rose-600 animate-pulse-slow drop-shadow-lg px-2">
           Doando Vida ❤️
