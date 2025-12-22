@@ -189,7 +189,7 @@ const Home = () => {
                 >
                   <stat.icon className="w-6 h-6 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
                 </div>
-                <h3 className="text-2xl xs:text-2xl sm:text-3xl font-bold text-gray-800 mb-2">{stat.title}</h3>
+                <h3 className="text-2xl xs:text-2xl sm:text-2xl font-bold text-gray-800 mb-1">{stat.title}</h3>
                 <p className="text-lg xs:text-lg sm:text-xl text-gray-600">{stat.subtitle}</p>
               </div>
             ))}
@@ -466,7 +466,7 @@ const Home = () => {
         <div className="max-w-6xl mx-auto">
           {/* Cabeçalho da seção */}
           <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
-            <h2 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-2 sm:mb-3 px-2">
+            <h2 className="text-2xl xs:text-3xl sm:text-4xl lg:text-4xl font-bold text-gray-800 mb-2 sm:mb-2 px-2">
               Como você pode ajudar
             </h2>
             <p className="text-base xs:text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
@@ -542,7 +542,7 @@ const Home = () => {
                     </svg>
                   </div>
                   {/* Textos do card */}
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3 text-center group-hover:text-rose-600 transition-colors duration-300">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-2 text-center group-hover:text-rose-600 transition-colors duration-300">
                     Prepare-se para Doar
                   </h3>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600 font-medium leading-relaxed mb-3 sm:mb-4 text-center">
