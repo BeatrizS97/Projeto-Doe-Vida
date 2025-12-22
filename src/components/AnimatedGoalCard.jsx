@@ -69,7 +69,7 @@ const AnimatedGoalCard = () => {
           {remaining > 0 ? (
             <div>
               <p className="text-lg sm:text-xl font-medium opacity-90 mb-0.5">
-                {remaining === goal ? 'Você ainda não doou' : 'Faltam'}
+                {remaining === goal ? 'Você não fez nenhuma doação. Faltam' : 'Faltam'}
               </p>
               <p className="text-3xl sm:text-4xl font-extrabold tabular-nums mb-0.5">
                 {animatedRemaining}
