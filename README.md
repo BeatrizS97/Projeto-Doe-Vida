@@ -8,7 +8,7 @@
 Este é um projeto criado com amor, memória e propósito.  
 Nasce como uma homenagem aos meus irmãos **Rodrigo** e **Natalha**, e tem como missão incentivar a doação de sangue — um gesto simples que salva vidas e marcou profundamente nossa história.
 
-➡️ **Acesse o projeto:** [https://doevida.vercel.app](https://doevida.vercel.app)
+➡️ **Acesse o projeto:** [https://projeto-doe-vida.vercel.app](projeto-doe-vida.vercel.app)
 
 ---
 
