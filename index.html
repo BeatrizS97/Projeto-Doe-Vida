@@ -2,7 +2,12 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link
+      id="favicon"
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23dc2626' d='M47.5 8C41.9 8 37 11.4 34 16.4 31 11.4 26.1 8 20.5 8 12.5 8 6 14.5 6 22.5c0 16 28 33.5 28 33.5s28-17.5 28-33.5C62 14.5 55.5 8 47.5 8Z'/%3E%3C/svg%3E"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#dc2626" />
     <meta
@@ -20,7 +25,22 @@
     <meta property="twitter:title" content="Rodrigo e Natalha - Doação de Sangue" />
     <meta property="twitter:description" content="Em memória de Rodrigo e Natalha. Faça parte dessa corrente e doe sangue." />
     
-    <title>Rodrigo e Natalha - Doação de Sangue</title>
+    <title>Projeto Doe Vida - Rodrigo e Natalha</title>
+    <script>
+      (() => {
+        const favicon = document.getElementById('favicon')
+        if (!favicon) return
+
+        const heartUp = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg transform='translate(0 -2) scale(1.04)'%3E%3Cpath fill='%23dc2626' d='M47.5 8C41.9 8 37 11.4 34 16.4 31 11.4 26.1 8 20.5 8 12.5 8 6 14.5 6 22.5c0 16 28 33.5 28 33.5s28-17.5 28-33.5C62 14.5 55.5 8 47.5 8Z'/%3E%3C/g%3E%3C/svg%3E"
+        const heartDown = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23dc2626' d='M47.5 8C41.9 8 37 11.4 34 16.4 31 11.4 26.1 8 20.5 8 12.5 8 6 14.5 6 22.5c0 16 28 33.5 28 33.5s28-17.5 28-33.5C62 14.5 55.5 8 47.5 8Z'/%3E%3C/svg%3E"
+
+        let beat = false
+        setInterval(() => {
+          beat = !beat
+          favicon.setAttribute('href', beat ? heartUp : heartDown)
+        }, 450)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
