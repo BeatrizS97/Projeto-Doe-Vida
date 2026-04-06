@@ -1,4 +1,4 @@
-# 🫀 Doe Vida – Em Memória de Rodrigo e Natalha
+# ❤️ Doe Vida – Em Memória de Rodrigo e Natalha
 
 ![No Forks](https://img.shields.io/badge/fork-proibido-critical)
 ![Copyright](https://img.shields.io/badge/copyright-2025%20Beatriz%20Silva-red)
