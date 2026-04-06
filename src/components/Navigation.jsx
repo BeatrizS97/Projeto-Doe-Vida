@@ -51,21 +51,18 @@ const Navigation = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo (Esquerda) */}
           <div
-            className="flex items-center space-x-3 cursor-pointer group"
+            className="flex items-center gap-4 cursor-pointer group"
             // CORRIGIDO: Agora usa handleNavigation para realmente navegar para home
             onClick={() => handleNavigation("/")}
           >
-            {/* Container do ícone de coração com efeitos */}
-            <div className="relative">
-              {/* Ícone do coração */}
-              <Heart className="w-10 h-10 text-red-600 fill-red-600 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg" />
-
-              {/* Anel de pulso que aparece ao passar o mouse */}
-              <div className="absolute inset-0 rounded-full bg-red-600 opacity-0 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
-            </div>
+            {/* Ícone do coração */}
+            <Heart
+              className="h-12 w-12 flex-shrink-0 text-red-600 fill-red-600 transition-transform duration-300 group-hover:scale-110 group-hover:drop-shadow-lg sm:h-14 sm:w-14"
+              style={{ animation: 'heartbeat 1.1s ease-in-out infinite', transformOrigin: 'center' }}
+            />
 
             {/* Textos do logo */}
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-center">
               {/* Título principal com gradiente */}
               <span className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-rose-600 to-red-700 bg-clip-text text-transparent transition-all duration-300 group-hover:from-rose-700 group-hover:to-red-800">
                 Doe Vida
@@ -200,6 +197,30 @@ const Navigation = () => {
           Animação slideInFromLeft:
           Usada nos itens do menu mobile para aparecerem da esquerda com fade-in
         */
+        @keyframes heartbeat {
+          0%, 100% {
+            transform: scale(1);
+          }
+          10% {
+            transform: scale(0.94);
+          }
+          20% {
+            transform: scale(1.12);
+          }
+          30% {
+            transform: scale(1);
+          }
+          40% {
+            transform: scale(0.97);
+          }
+          50% {
+            transform: scale(1.08);
+          }
+          60% {
+            transform: scale(1);
+          }
+        }
+
         @keyframes slideInFromLeft {
           from {
             opacity: 0; /* Totalmente invisível */
